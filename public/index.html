@@ -218,6 +218,21 @@
       font-size: 1rem;
     }
 
+    .tax-stat.highlight {
+      border-color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
+    }
+
+    .tax-note {
+      margin: 10px 0 0;
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    .tax-note a {
+      color: var(--accent);
+    }
+
     footer {
       margin-top: 32px;
       font-size: 0.85rem;
@@ -231,7 +246,7 @@
       <h1 id="page-title">Proposed West End Health Service District</h1>
       <p class="levy-detail" id="levy-detail">Loading levy information…</p>
       <h2 class="section-title">Property Search</h2>
-      <p class="subtitle">Search by owner name, account number, parcel number, or street address.</p>
+      <p class="subtitle">Search by owner name, account number, or parcel number.</p>
     </header>
 
     <section class="search-panel">
@@ -240,13 +255,13 @@
           id="query"
           name="q"
           type="search"
-          placeholder="e.g. Troy Masters, R0007980, 4269-302-00-055, 203 Highway 97"
+          placeholder="e.g. Jane Doe, R0007980, 4269-302-00-055"
           autocomplete="off"
           required
         />
         <button type="submit" id="submit-btn">Search</button>
       </form>
-      <p class="hint">Owner names work as first-last or last-first. Addresses can include a house number and street.</p>
+      <p class="hint">Owner names work as first-last or last-first.</p>
     </section>
 
     <div id="status" class="status" hidden></div>
@@ -254,7 +269,11 @@
     <div id="results" class="results"></div>
 
     <footer>
-      Data from <a href="https://eagleweb.montrosecounty.net/eagleassessor/web/" target="_blank" rel="noopener">Montrose County EagleWeb</a>.
+      Data from
+      <a href="https://eagleweb.montrosecounty.net/eagleassessor/web/" target="_blank" rel="noopener">EagleWeb</a>
+      and
+      <a href="https://treasurerweb.montrosecounty.net/treasurer/web/" target="_blank" rel="noopener">TreasurerWeb</a>.
+      Senior exemption amounts come from TreasurerWeb tax bills.
     </footer>
   </main>
 
@@ -275,7 +294,8 @@
         pageTitleEl.textContent = levy.label || "Proposed mill levy";
         levyDetailEl.innerHTML =
           `<strong>${levy.millLevy} mills</strong> — Estimated increases use each property's ` +
-          `<em>Total Non-School Assessed Value</em> from EagleWeb (${levy.assessmentYear || "current year"}).`;
+          `<em>Total Non-School Assessed Value</em> from EagleWeb (${levy.assessmentYear || "current year"}). ` +
+          `When a senior property tax exemption applies, the estimate is reduced using exemption data from TreasurerWeb.`;
         document.title = `Property Search — ${levy.label || "Montrose County"}`;
         return;
       }
@@ -325,8 +345,38 @@
         card.className = "result-card";
 
         const assessed = item.assessment?.nonSchoolAssessedValue;
-        const annual = item.levyImpact?.annualIncrease;
-        const monthly = item.levyImpact?.monthlyIncrease;
+        const grossAnnual = item.levyImpact?.annualIncreaseGross;
+        const netAnnual = item.levyImpact?.annualIncreaseNet ?? item.levyImpact?.annualIncrease;
+        const grossMonthly = item.levyImpact?.monthlyIncreaseGross;
+        const netMonthly = item.levyImpact?.monthlyIncreaseNet ?? item.levyImpact?.monthlyIncrease;
+        const hasSenior = item.levyImpact?.hasSeniorExemption;
+        const treasurerUrl = item.treasurer?.detailUrl;
+
+        const increaseStats = hasSenior
+          ? `
+            <div class="tax-stat">
+              <span>Est. annual (before exemption)</span>
+              <strong>${payload.levy?.configured ? formatMoney(grossAnnual) : "Set mill levy"}</strong>
+            </div>
+            <div class="tax-stat highlight">
+              <span>Est. annual (after senior exemption)</span>
+              <strong>${payload.levy?.configured ? formatMoney(netAnnual) : "Set mill levy"}</strong>
+            </div>
+            <div class="tax-stat">
+              <span>Est. monthly (after exemption)</span>
+              <strong>${payload.levy?.configured ? formatMoney(netMonthly) : "—"}</strong>
+            </div>
+          `
+          : `
+            <div class="tax-stat">
+              <span>Est. annual increase</span>
+              <strong>${payload.levy?.configured ? formatMoney(netAnnual) : "Set mill levy"}</strong>
+            </div>
+            <div class="tax-stat">
+              <span>Est. monthly increase</span>
+              <strong>${payload.levy?.configured ? formatMoney(netMonthly) : "—"}</strong>
+            </div>
+          `;
 
         card.innerHTML = `
           <span class="match-type">${item.matchType}</span>
@@ -338,15 +388,9 @@
               <span>Non-school assessed</span>
               <strong>${formatMoney(assessed)}</strong>
             </div>
-            <div class="tax-stat">
-              <span>Est. annual increase</span>
-              <strong>${payload.levy?.configured ? formatMoney(annual) : "Set mill levy"}</strong>
-            </div>
-            <div class="tax-stat">
-              <span>Est. monthly increase</span>
-              <strong>${payload.levy?.configured ? formatMoney(monthly) : "—"}</strong>
-            </div>
+            ${increaseStats}
           </div>
+          ${hasSenior ? `<p class="tax-note">Senior exemption applied (${formatMoney(item.levyImpact.seniorExemption)} credit at ${payload.levy?.millLevy} mills). <a href="${treasurerUrl}" target="_blank" rel="noopener">View TreasurerWeb bill</a></p>` : ""}
         `;
         resultsEl.appendChild(card);
       }
@@ -359,7 +403,7 @@
 
       submitBtn.disabled = true;
       showError("");
-      showStatus("Searching EagleWeb and loading assessment values...");
+      showStatus("Searching EagleWeb, TreasurerWeb, and loading assessment values...");
       resultsEl.innerHTML = "";
 
       try {

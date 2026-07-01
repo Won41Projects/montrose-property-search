@@ -7,7 +7,8 @@ import { fileURLToPath } from "node:url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT || 3847);
 const BASE = "https://eagleweb.montrosecounty.net/eagleassessor";
-const APP_VERSION = "2026-07-01-levy";
+const TREASURER_BASE = "https://treasurerweb.montrosecounty.net/treasurer";
+const APP_VERSION = "2026-07-02-senior-exemption";
 const USER_AGENT =
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
 
@@ -132,34 +133,10 @@ function buildSearchAttempts(query) {
     });
   }
 
-  const addressMatch = trimmed.match(/^(\d+[A-Za-z]?)\s+(.+)$/);
-  if (addressMatch) {
-    attempts.push({
-      matchType: "Address",
-      fields: {
-        SitusIDHouseNumber: addressMatch[1],
-        SitusIDStreetName: addressMatch[2].toUpperCase(),
-      },
-    });
-    attempts.push({
-      matchType: "Address",
-      fields: {
-        SitusIDStreetName: trimmed.toUpperCase(),
-      },
-    });
-  }
-
   for (const owner of ownerVariants(trimmed)) {
     attempts.push({
       matchType: "Owner",
       fields: { OwnerIDSearchString: owner },
-    });
-  }
-
-  if (!addressMatch) {
-    attempts.push({
-      matchType: "Address",
-      fields: { SitusIDStreetName: trimmed.toUpperCase() },
     });
   }
 
@@ -298,6 +275,127 @@ function estimateAnnualIncrease(nonSchoolAssessedValue, millLevy) {
   return (nonSchoolAssessedValue * millLevy) / 1000;
 }
 
+function parseTreasurerTaxInfo(html) {
+  const text = stripTags(
+    html
+      .replace(/<\/tr>/gi, "\n")
+      .replace(/<\/t[dh][^>]*>/gi, "\t")
+      .replace(/<tr[^>]*>/gi, "")
+      .replace(/<br\s*\/?>/gi, "\n"),
+  );
+
+  const nonSchoolMillLevy = parseMoney(
+    text.match(/Non-School[\s\S]*?(\d+\.\d+)/i)?.[1],
+  );
+
+  const nonSchoolSection = text.match(
+    /Total Value \(Non-School\)[\s\S]*?Taxes \(Non-School\)/i,
+  )?.[0];
+
+  const nonSchoolAssessed = parseMoney(
+    nonSchoolSection?.match(/Total Value \(Non-School\)\s+[\d,]+\s+([\d,]+)/i)?.[1],
+  );
+
+  const seniorExemptionMatch = nonSchoolSection?.match(
+    /SeniorExemption\s+\(?\$?\s*([\d,]+\.\d+)\)?/i,
+  );
+  const seniorExemptionNonSchool = seniorExemptionMatch
+    ? parseMoney(seniorExemptionMatch[1])
+    : null;
+
+  const taxesBilledNonSchool = parseMoney(
+    nonSchoolSection?.match(/Taxes Billed\s+\$?\s*([\d,]+\.\d+)/i)?.[1],
+  );
+
+  return {
+    nonSchoolAssessed,
+    nonSchoolMillLevy,
+    seniorExemptionNonSchool,
+    taxesBilledNonSchool,
+    hasSeniorExemption: seniorExemptionNonSchool != null && seniorExemptionNonSchool > 0,
+    treasurerUrl: null,
+  };
+}
+
+function calculateLevyImpact(assessment, treasurerInfo, millLevy) {
+  const assessed = assessment?.nonSchoolAssessedValue;
+  if (!assessed || !millLevy) {
+    return {
+      millLevy,
+      annualIncreaseGross: null,
+      annualIncreaseNet: null,
+      monthlyIncreaseGross: null,
+      monthlyIncreaseNet: null,
+      seniorExemption: null,
+      exemptAssessedValue: null,
+      taxableAssessedValue: null,
+      hasSeniorExemption: false,
+    };
+  }
+
+  const annualIncreaseGross = estimateAnnualIncrease(assessed, millLevy);
+
+  if (
+    !treasurerInfo?.hasSeniorExemption ||
+    !treasurerInfo.nonSchoolMillLevy ||
+    !treasurerInfo.seniorExemptionNonSchool
+  ) {
+    return {
+      millLevy,
+      annualIncreaseGross,
+      annualIncreaseNet: annualIncreaseGross,
+      monthlyIncreaseGross:
+        annualIncreaseGross != null
+          ? Number((annualIncreaseGross / 12).toFixed(2))
+          : null,
+      monthlyIncreaseNet:
+        annualIncreaseGross != null
+          ? Number((annualIncreaseGross / 12).toFixed(2))
+          : null,
+      seniorExemption: null,
+      exemptAssessedValue: null,
+      taxableAssessedValue: assessed,
+      hasSeniorExemption: false,
+    };
+  }
+
+  let exemptAssessedValue =
+    treasurerInfo.seniorExemptionNonSchool /
+    (treasurerInfo.nonSchoolMillLevy / 1000);
+
+  if (treasurerInfo.nonSchoolAssessed && treasurerInfo.nonSchoolAssessed > 0) {
+    exemptAssessedValue *= assessed / treasurerInfo.nonSchoolAssessed;
+  }
+
+  exemptAssessedValue = Math.min(exemptAssessedValue, assessed);
+  const taxableAssessedValue = Math.max(0, assessed - exemptAssessedValue);
+  const annualIncreaseNet = estimateAnnualIncrease(taxableAssessedValue, millLevy);
+  const seniorCreditAtProposedLevy =
+    annualIncreaseGross != null && annualIncreaseNet != null
+      ? Number((annualIncreaseGross - annualIncreaseNet).toFixed(2))
+      : null;
+
+  return {
+    millLevy,
+    annualIncreaseGross,
+    annualIncreaseNet,
+    monthlyIncreaseGross:
+      annualIncreaseGross != null
+        ? Number((annualIncreaseGross / 12).toFixed(2))
+        : null,
+    monthlyIncreaseNet:
+      annualIncreaseNet != null
+        ? Number((annualIncreaseNet / 12).toFixed(2))
+        : null,
+    seniorExemption: seniorCreditAtProposedLevy,
+    exemptAssessedValue: Number(exemptAssessedValue.toFixed(2)),
+    taxableAssessedValue: Number(taxableAssessedValue.toFixed(2)),
+    hasSeniorExemption: true,
+    treasurerSeniorExemptionSource: treasurerInfo.seniorExemptionNonSchool,
+    treasurerNonSchoolMillLevy: treasurerInfo.nonSchoolMillLevy,
+  };
+}
+
 async function fetchAccountAssessment(jar, accountNumber) {
   const urls = [
     `${BASE}/taxweb/account.jsp?accountNum=${encodeURIComponent(accountNumber)}&doc=AccountValue`,
@@ -346,6 +444,7 @@ async function enrichResultsWithLevy(jar, results) {
         nonSchoolAssessedValue: null,
         nonSchoolActualValue: null,
       };
+      let treasurerInfo = null;
 
       try {
         assessment = await fetchAccountAssessment(jar, result.accountNumber);
@@ -353,19 +452,27 @@ async function enrichResultsWithLevy(jar, results) {
         // Keep search results even if one assessment lookup fails.
       }
 
-      const annualIncrease =
-        millLevy != null
-          ? estimateAnnualIncrease(assessment.nonSchoolAssessedValue, millLevy)
-          : null;
+      try {
+        treasurerInfo = await fetchTreasurerTaxInfo(result.accountNumber);
+      } catch {
+        // Treasurer data is optional; gross estimate still works.
+      }
+
+      const levyImpact = calculateLevyImpact(assessment, treasurerInfo, millLevy);
 
       return {
         ...result,
         assessment,
+        treasurer: treasurerInfo
+          ? {
+              ...treasurerInfo,
+              detailUrl: `${TREASURER_BASE}/treasurerweb/account.jsp?account=${encodeURIComponent(result.accountNumber)}&guest=true`,
+            }
+          : null,
         levyImpact: {
-          millLevy,
-          annualIncrease,
-          monthlyIncrease:
-            annualIncrease != null ? Number((annualIncrease / 12).toFixed(2)) : null,
+          ...levyImpact,
+          annualIncrease: levyImpact.annualIncreaseNet,
+          monthlyIncrease: levyImpact.monthlyIncreaseNet,
         },
       };
     }),
@@ -378,7 +485,8 @@ async function enrichResultsWithLevy(jar, results) {
       millLevy,
       configured: millLevy != null,
       assessmentYear: levyConfig.assessmentYear ?? null,
-      formula: "annualIncrease = nonSchoolAssessedValue × millLevy ÷ 1000",
+      formula:
+        "netIncrease = (nonSchoolAssessed − seniorExemptAssessed) × millLevy ÷ 1000",
       notes: levyConfig.notes ?? "",
     },
   };
@@ -492,7 +600,7 @@ function httpsRequest(jar, urlString, options = {}) {
   });
 }
 
-async function eagleFetch(jar, url, options = {}) {
+async function siteFetch(jar, url, options = {}, siteLabel = "county website") {
   const method = options.method || "GET";
   const body =
     options.body instanceof URLSearchParams
@@ -503,11 +611,6 @@ async function eagleFetch(jar, url, options = {}) {
     ...(options.headers || {}),
   };
 
-  if (method === "POST") {
-    headers.Referer = headers.Referer || `${BASE}/taxweb/search.jsp`;
-    headers.Origin = headers.Origin || "https://eagleweb.montrosecounty.net";
-  }
-
   const { statusCode, body: responseBody } = await httpsRequest(jar, url, {
     method,
     headers,
@@ -516,13 +619,60 @@ async function eagleFetch(jar, url, options = {}) {
   });
 
   if (statusCode >= 400) {
-    throw new Error(`EagleWeb returned HTTP ${statusCode}.`);
+    throw new Error(`${siteLabel} returned HTTP ${statusCode}.`);
   }
 
   return {
     response: { statusCode },
     body: responseBody,
   };
+}
+
+async function eagleFetch(jar, url, options = {}) {
+  const method = options.method || "GET";
+  const headers = {
+    ...(options.headers || {}),
+  };
+
+  if (method === "POST") {
+    headers.Referer = headers.Referer || `${BASE}/taxweb/search.jsp`;
+    headers.Origin = headers.Origin || "https://eagleweb.montrosecounty.net";
+  }
+
+  return siteFetch(jar, url, { ...options, headers }, "EagleWeb");
+}
+
+async function treasurerFetch(jar, url, options = {}) {
+  return siteFetch(jar, url, options, "TreasurerWeb");
+}
+
+async function ensureTreasurerSession(jar) {
+  await treasurerFetch(jar, `${TREASURER_BASE}/web/`);
+  await treasurerFetch(jar, `${TREASURER_BASE}/web/login.jsp`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      Referer: `${TREASURER_BASE}/web/`,
+    },
+    body: new URLSearchParams({
+      submit: "Enter TreasurerWeb",
+    }),
+  });
+}
+
+async function fetchTreasurerTaxInfo(accountNumber) {
+  const jar = new CookieJar();
+  await ensureTreasurerSession(jar);
+
+  const accountUrl = `${TREASURER_BASE}/treasurerweb/account.jsp?account=${encodeURIComponent(accountNumber)}&guest=true`;
+  const { body } = await treasurerFetch(jar, accountUrl);
+  const parsed = parseTreasurerTaxInfo(body);
+
+  if (!parsed.nonSchoolAssessed && !parsed.hasSeniorExemption) {
+    return null;
+  }
+
+  return parsed;
 }
 
 async function ensurePublicSession(jar) {
@@ -732,6 +882,8 @@ if (isMain) {
 export {
   parseResults,
   parseAssessmentTable,
+  parseTreasurerTaxInfo,
+  calculateLevyImpact,
   buildSearchAttempts,
   normalizeAccount,
   searchProperties,

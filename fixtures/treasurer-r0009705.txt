@@ -1,0 +1,13 @@
+Value
+Area Id	Authority Type	Mill Levy
+025005 - - 025005	School	34.5850000
+	Non-School	44.9110000
+Total Value (Non-School)	236,450	14,770
+Taxes Billed		$663.32
+SeniorExemption		($280.72)
+Taxes (Non-School)		$382.60
+Total Value (School)	236,450	16,670
+Taxes Billed		$576.52
+SeniorExemption		($243.84)
+Taxes (School)		$332.68
+Total Billed		$715.28
