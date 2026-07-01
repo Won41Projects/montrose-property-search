@@ -1,0 +1,12 @@
+{
+  "label": "Proposed West End Health Service District (Critical Care Unit)",
+  "millLevy": 20,
+  "assessmentYear": 2026,
+  "notes": "Derived from official mill levy table: $20 estimated additional tax per $1,000 of non-school assessed value. Taxes based on NON SCHOOL Assessed Value.",
+  "calibration": {
+    "source": "Proposed West End Health Service District mill levy table",
+    "rule": "$20 additional tax per $1,000 non-school assessed value",
+    "sampleNonSchoolAssessedValue": 16020,
+    "sampleAnnualIncrease": 320.4
+  }
+}

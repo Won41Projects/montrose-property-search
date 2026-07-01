@@ -1,0 +1,8 @@
+services:
+  - type: web
+    name: montrose-property-search
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/version

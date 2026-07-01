@@ -1,0 +1,15 @@
+{
+  "name": "montrose-property-search",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node server.mjs",
+    "check": "node check.mjs",
+    "derive-levy": "node derive-levy.mjs",
+    "test": "node --test test.mjs"
+  }
+}
