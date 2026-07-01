@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Montrose County Property Search</title>
+  <title>Property Search — Montrose County</title>
   <style>
     :root {
       color-scheme: light dark;
@@ -49,15 +49,34 @@
       padding: 48px 20px 64px;
     }
 
+    header {
+      margin-bottom: 28px;
+    }
+
     h1 {
-      margin: 0 0 8px;
+      margin: 0 0 10px;
       font-size: 1.75rem;
       font-weight: 650;
+      line-height: 1.25;
+    }
+
+    .levy-detail {
+      margin: 0 0 20px;
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.45;
+    }
+
+    h2.section-title {
+      margin: 0 0 8px;
+      font-size: 1.15rem;
+      font-weight: 600;
     }
 
     .subtitle {
-      margin: 0 0 28px;
+      margin: 0 0 20px;
       color: var(--muted);
+      font-size: 0.95rem;
     }
 
     .search-panel {
@@ -168,18 +187,8 @@
       color: var(--accent);
     }
 
-    .levy-banner {
-      margin-top: 20px;
-      padding: 14px 16px;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      background: var(--panel);
-      font-size: 0.92rem;
-    }
-
-    .levy-banner strong {
-      display: block;
-      margin-bottom: 4px;
+    .warning {
+      color: var(--error-text);
     }
 
     .tax-grid {
@@ -209,9 +218,7 @@
       font-size: 1rem;
     }
 
-    .warning {
-      color: var(--error-text);
-    }
+    footer {
       margin-top: 32px;
       font-size: 0.85rem;
       color: var(--muted);
@@ -220,8 +227,12 @@
 </head>
 <body>
   <main>
-    <h1>Montrose County Property Search</h1>
-    <p class="subtitle">One box for owner name, account number, parcel number, or street address.</p>
+    <header>
+      <h1 id="page-title">Proposed West End Health Service District</h1>
+      <p class="levy-detail" id="levy-detail">Loading levy information…</p>
+      <h2 class="section-title">Property Search</h2>
+      <p class="subtitle">Search by owner name, account number, parcel number, or street address.</p>
+    </header>
 
     <section class="search-panel">
       <form id="search-form">
@@ -238,7 +249,6 @@
       <p class="hint">Owner names work as first-last or last-first. Addresses can include a house number and street.</p>
     </section>
 
-    <div id="levy-banner" class="levy-banner" hidden></div>
     <div id="status" class="status" hidden></div>
     <div id="error" class="error" hidden></div>
     <div id="results" class="results"></div>
@@ -255,6 +265,37 @@
     const statusEl = document.getElementById("status");
     const errorEl = document.getElementById("error");
     const resultsEl = document.getElementById("results");
+    const pageTitleEl = document.getElementById("page-title");
+    const levyDetailEl = document.getElementById("levy-detail");
+
+    function renderPageHeader(levy) {
+      if (!levy) return;
+
+      if (levy.configured) {
+        pageTitleEl.textContent = levy.label || "Proposed mill levy";
+        levyDetailEl.innerHTML =
+          `<strong>${levy.millLevy} mills</strong> — Estimated increases use each property's ` +
+          `<em>Total Non-School Assessed Value</em> from EagleWeb (${levy.assessmentYear || "current year"}).`;
+        document.title = `Property Search — ${levy.label || "Montrose County"}`;
+        return;
+      }
+
+      pageTitleEl.textContent = levy.label || "Proposed mill levy";
+      levyDetailEl.textContent = "Mill levy not configured.";
+    }
+
+    async function loadLevyHeader() {
+      try {
+        const response = await fetch("/api/levy");
+        const levy = await response.json();
+        renderPageHeader(levy);
+      } catch {
+        levyDetailEl.textContent =
+          "20 mills — based on non-school assessed value (2026).";
+      }
+    }
+
+    loadLevyHeader();
 
     function showStatus(text) {
       statusEl.hidden = !text;
@@ -266,8 +307,6 @@
       errorEl.textContent = text || "";
     }
 
-    const levyBannerEl = document.getElementById("levy-banner");
-
     function formatMoney(value) {
       if (value == null) return "—";
       return new Intl.NumberFormat("en-US", {
@@ -277,32 +316,8 @@
       }).format(value);
     }
 
-    function renderLevyBanner(levy) {
-      if (!levy) {
-        levyBannerEl.hidden = true;
-        return;
-      }
-
-      levyBannerEl.hidden = false;
-      if (!levy.configured) {
-        levyBannerEl.innerHTML = `
-          <strong>Mill levy not configured yet</strong>
-          Add the proposed levy to <code>levy.config.json</code>, or derive it from a sample property with
-          <code>node derive-levy.mjs --increase ANNUAL_INCREASE --assessed NON_SCHOOL_ASSESSED</code>.
-        `;
-        return;
-      }
-
-      levyBannerEl.innerHTML = `
-        <strong>${levy.label || "Proposed mill levy"}: ${levy.millLevy} mills</strong>
-        Estimated annual increase uses each property's <em>Total Non-School Assessed Value</em>
-        from EagleWeb assessment history (${levy.assessmentYear || "current year"}).
-      `;
-    }
-
     function renderResults(payload) {
       resultsEl.innerHTML = "";
-      renderLevyBanner(payload.levy);
       if (!payload.results?.length) return;
 
       for (const item of payload.results) {
