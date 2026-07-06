@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Property Search — Montrose County</title>
+  <title>Travel time &amp; recovery — spike</title>
   <style>
     :root {
       color-scheme: light dark;
@@ -53,10 +53,6 @@
       padding: 48px 20px 64px;
     }
 
-    header {
-      margin-bottom: 28px;
-    }
-
     h1 {
       margin: 0 0 10px;
       font-size: 1.75rem;
@@ -64,191 +60,10 @@
       line-height: 1.25;
     }
 
-    .levy-detail {
-      margin: 0 0 20px;
-      color: var(--muted);
-      font-size: 0.95rem;
-      line-height: 1.45;
-    }
-
     h2.section-title {
       margin: 0 0 8px;
       font-size: 1.15rem;
       font-weight: 600;
-    }
-
-    .subtitle {
-      margin: 0 0 20px;
-      color: var(--muted);
-      font-size: 0.95rem;
-    }
-
-    .search-panel {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 20px;
-    }
-
-    form {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    input[type="search"] {
-      flex: 1 1 280px;
-      min-width: 0;
-      padding: 12px 14px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: 1rem;
-      background: transparent;
-      color: inherit;
-    }
-
-    button {
-      padding: 12px 18px;
-      border: none;
-      border-radius: 8px;
-      background: var(--accent);
-      color: #fff;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    button:hover:not(:disabled) { background: var(--accent-hover); }
-    button:disabled { opacity: 0.6; cursor: wait; }
-
-    .hint {
-      margin-top: 12px;
-      font-size: 0.9rem;
-      color: var(--muted);
-    }
-
-    .status {
-      margin-top: 20px;
-      font-size: 0.95rem;
-      color: var(--muted);
-    }
-
-    .error {
-      margin-top: 16px;
-      padding: 12px 14px;
-      border-radius: 8px;
-      background: var(--error-bg);
-      color: var(--error-text);
-    }
-
-    .results {
-      margin-top: 24px;
-      display: grid;
-      gap: 12px;
-    }
-
-    .result-card {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 16px 18px;
-    }
-
-    .result-card h2 {
-      margin: 0 0 8px;
-      font-size: 1.05rem;
-    }
-
-    .result-card h2 a {
-      color: var(--accent);
-      text-decoration: none;
-    }
-
-    .result-card h2 a:hover { text-decoration: underline; }
-
-    .meta {
-      margin: 0;
-      color: var(--muted);
-      font-size: 0.92rem;
-    }
-
-    .summary {
-      margin: 10px 0 0;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-
-    .match-type {
-      display: inline-block;
-      margin-bottom: 8px;
-      padding: 2px 8px;
-      border-radius: 999px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      letter-spacing: 0.02em;
-      text-transform: uppercase;
-      background: color-mix(in srgb, var(--accent) 14%, transparent);
-      color: var(--accent);
-    }
-
-    .warning {
-      color: var(--error-text);
-    }
-
-    .tax-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 10px;
-      margin-top: 12px;
-    }
-
-    .tax-stat {
-      padding: 10px 12px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      background: color-mix(in srgb, var(--accent) 6%, transparent);
-    }
-
-    .tax-stat span {
-      display: block;
-      font-size: 0.78rem;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.03em;
-      margin-bottom: 4px;
-    }
-
-    .tax-stat strong {
-      font-size: 1rem;
-    }
-
-    .tax-stat.highlight {
-      border-color: var(--accent);
-      background: color-mix(in srgb, var(--accent) 12%, transparent);
-    }
-
-    .tax-note {
-      margin: 10px 0 0;
-      font-size: 0.88rem;
-      color: var(--muted);
-    }
-
-    .tax-note a {
-      color: var(--accent);
-    }
-
-    footer {
-      margin-top: 32px;
-      font-size: 0.85rem;
-      color: var(--muted);
-    }
-
-    .recovery-panel {
-      margin-top: 24px;
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 18px;
     }
 
     .title-row {
@@ -258,7 +73,9 @@
       margin-bottom: 8px;
     }
 
-    .title-row .section-title { margin: 0; }
+    .title-row .section-title {
+      margin: 0;
+    }
 
     .info-btn {
       flex-shrink: 0;
@@ -277,7 +94,23 @@
       line-height: 1;
     }
 
-    .info-btn:hover { background: color-mix(in srgb, var(--accent) 14%, transparent); }
+    .info-btn:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .subtitle {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .recovery-panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px;
+    }
 
     .condition-pills {
       display: flex;
@@ -286,7 +119,9 @@
       margin-bottom: 14px;
     }
 
-    .condition-pills label { cursor: pointer; }
+    .condition-pills label {
+      cursor: pointer;
+    }
 
     .condition-pills input {
       position: absolute;
@@ -325,7 +160,9 @@
     }
 
     @media (min-width: 640px) {
-      .recovery-row { grid-template-columns: minmax(140px, 1fr) 2fr; }
+      .recovery-row {
+        grid-template-columns: minmax(140px, 1fr) 2fr;
+      }
     }
 
     .readout-stat {
@@ -394,6 +231,11 @@
       cursor: pointer;
     }
 
+    input[type="range"]:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+    }
+
     .slider-marks {
       display: flex;
       justify-content: space-between;
@@ -416,15 +258,24 @@
       border-radius: 8px;
       background: var(--error-bg);
       color: var(--error-text);
-      font-size: 1rem;
+      font-size: 1.05rem;
       font-weight: 700;
       text-align: center;
       line-height: 1.35;
     }
 
-    .recovery-disclaimer {
+    .panel-footer {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
       margin-top: 10px;
-      font-size: 0.82rem;
+    }
+
+    .embed-hint {
+      margin-top: 20px;
+      font-size: 0.85rem;
       color: var(--muted);
     }
 
@@ -484,8 +335,6 @@
       cursor: pointer;
     }
 
-    .modal-close:hover { background: color-mix(in srgb, var(--accent) 8%, transparent); }
-
     .sr-only {
       position: absolute;
       width: 1px; height: 1px;
@@ -499,36 +348,13 @@
 </head>
 <body>
   <main>
-    <header>
-      <h1 id="page-title">Proposed West End Health Service District</h1>
-      <p class="levy-detail" id="levy-detail">Loading levy information…</p>
-      <h2 class="section-title">Property Search</h2>
-      <p class="subtitle">Search by owner name, account number, or parcel number.</p>
-    </header>
-
-    <section class="search-panel">
-      <form id="search-form">
-        <input
-          id="query"
-          name="q"
-          type="search"
-          placeholder="e.g. Jane Doe, R0007980, 4269-302-00-055"
-          autocomplete="off"
-          required
-        />
-        <button type="submit" id="submit-btn">Search</button>
-      </form>
-      <p class="hint">Owner names work as first-last or last-first.</p>
-    </section>
-
-    <div id="status" class="status" hidden></div>
-    <div id="error" class="error" hidden></div>
-    <div id="results" class="results"></div>
+    <h1>Proposed West End Health Service District</h1>
+    <p class="subtitle">Spike preview — recovery widget styled to match the property search app.</p>
 
     <section class="recovery-panel" aria-labelledby="recovery-title">
       <div class="title-row">
         <h2 class="section-title" id="recovery-title">How travel time affects recovery</h2>
-        <button type="button" class="info-btn" id="recoveryInfoBtn" aria-label="Sources and details" title="Sources and details">i</button>
+        <button type="button" class="info-btn" id="infoBtn" aria-label="Sources and details" title="Sources and details">i</button>
       </div>
       <p class="subtitle" id="conditionExplanation" style="margin-bottom: 12px;">
         Arriving sooner greatly increases the chance of a good recovery.
@@ -559,9 +385,9 @@
 
       <div class="recovery-row">
         <div class="readout-stat highlight" aria-live="polite" aria-atomic="true">
-          <span id="percentLabel">Approximate chance of good recovery</span>
+          <span id="percentLabel">Approx. good recovery</span>
           <strong id="percentValue">—</strong>
-          <em id="metricNote">mRS 0–2 at 90 days · population estimate</em>
+          <em id="metricNote">mRS 0–2 at 90 days</em>
         </div>
 
         <div class="slider-wrap">
@@ -588,25 +414,23 @@
       </div>
 
       <p class="recovery-note" id="recoveryNote"></p>
+
       <p class="emergency-notice" id="emergencyNotice" role="note">
         If symptoms occur, call 911 now. Do not wait — EMS can start care on the way.
       </p>
-      <p class="recovery-disclaimer">Approximate; population estimate — not medical advice.</p>
+
+      <div class="panel-footer">
+        <span style="font-size: 0.82rem; color: var(--muted);">Approximate; population estimate — not medical advice.</span>
+      </div>
     </section>
 
-    <footer>
-      Data from
-      <a href="https://eagleweb.montrosecounty.net/eagleassessor/web/" target="_blank" rel="noopener">EagleWeb</a>
-      and
-      <a href="https://treasurerweb.montrosecounty.net/treasurer/web/" target="_blank" rel="noopener">TreasurerWeb</a>.
-      Senior exemption amounts come from TreasurerWeb tax bills.
-    </footer>
+    <p class="embed-hint">This section is designed to drop below property search results in the main app.</p>
   </main>
 
-  <div class="modal-backdrop" id="recoveryModal" role="dialog" aria-modal="true" aria-labelledby="recoveryModalTitle" hidden>
+  <div class="modal-backdrop" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" hidden>
     <div class="modal">
-      <h2 id="recoveryModalTitle">Sources and caveats</h2>
-      <h3>About these estimates</h3>
+      <h2 id="modalTitle">Sources and caveats</h2>
+      <h3 id="conditionModalNote">About these estimates</h3>
       <p id="conditionModalText">
         Simplified, approximate curves for community education. Individual outcomes vary by age,
         severity, comorbidities, and local EMS/hospital performance.
@@ -647,157 +471,9 @@
         <li>Call EMS — do not delay for self-transport.</li>
       </ul>
 
-      <button type="button" class="modal-close" id="recoveryModalClose">Close</button>
+      <button type="button" class="modal-close" id="modalClose">Close</button>
     </div>
   </div>
-
-  <script>
-    const form = document.getElementById("search-form");
-    const queryInput = document.getElementById("query");
-    const submitBtn = document.getElementById("submit-btn");
-    const statusEl = document.getElementById("status");
-    const errorEl = document.getElementById("error");
-    const resultsEl = document.getElementById("results");
-    const pageTitleEl = document.getElementById("page-title");
-    const levyDetailEl = document.getElementById("levy-detail");
-
-    function renderPageHeader(levy) {
-      if (!levy) return;
-
-      if (levy.configured) {
-        pageTitleEl.textContent = levy.label || "Proposed mill levy";
-        levyDetailEl.innerHTML =
-          `<strong>${levy.millLevy} mills</strong> — Estimated increases use each property's ` +
-          `<em>Total Non-School Assessed Value</em> from EagleWeb (${levy.assessmentYear || "current year"}). ` +
-          `When a senior property tax exemption applies, the estimate is reduced using exemption data from TreasurerWeb.`;
-        document.title = `Property Search — ${levy.label || "Montrose County"}`;
-        return;
-      }
-
-      pageTitleEl.textContent = levy.label || "Proposed mill levy";
-      levyDetailEl.textContent = "Mill levy not configured.";
-    }
-
-    async function loadLevyHeader() {
-      try {
-        const response = await fetch("/api/levy");
-        const levy = await response.json();
-        renderPageHeader(levy);
-      } catch {
-        levyDetailEl.textContent =
-          "20 mills — based on non-school assessed value (2026).";
-      }
-    }
-
-    loadLevyHeader();
-
-    function showStatus(text) {
-      statusEl.hidden = !text;
-      statusEl.textContent = text || "";
-    }
-
-    function showError(text) {
-      errorEl.hidden = !text;
-      errorEl.textContent = text || "";
-    }
-
-    function formatMoney(value) {
-      if (value == null) return "—";
-      return new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-        maximumFractionDigits: 2,
-      }).format(value);
-    }
-
-    function renderResults(payload) {
-      resultsEl.innerHTML = "";
-      if (!payload.results?.length) return;
-
-      for (const item of payload.results) {
-        const card = document.createElement("article");
-        card.className = "result-card";
-
-        const assessed = item.assessment?.nonSchoolAssessedValue;
-        const grossAnnual = item.levyImpact?.annualIncreaseGross;
-        const netAnnual = item.levyImpact?.annualIncreaseNet ?? item.levyImpact?.annualIncrease;
-        const grossMonthly = item.levyImpact?.monthlyIncreaseGross;
-        const netMonthly = item.levyImpact?.monthlyIncreaseNet ?? item.levyImpact?.monthlyIncrease;
-        const hasSenior = item.levyImpact?.hasSeniorExemption;
-        const treasurerUrl = item.treasurer?.detailUrl;
-
-        const increaseStats = hasSenior
-          ? `
-            <div class="tax-stat">
-              <span>Est. annual (before exemption)</span>
-              <strong>${payload.levy?.configured ? formatMoney(grossAnnual) : "Set mill levy"}</strong>
-            </div>
-            <div class="tax-stat highlight">
-              <span>Est. annual (after senior exemption)</span>
-              <strong>${payload.levy?.configured ? formatMoney(netAnnual) : "Set mill levy"}</strong>
-            </div>
-            <div class="tax-stat">
-              <span>Est. monthly (after exemption)</span>
-              <strong>${payload.levy?.configured ? formatMoney(netMonthly) : "—"}</strong>
-            </div>
-          `
-          : `
-            <div class="tax-stat">
-              <span>Est. annual increase</span>
-              <strong>${payload.levy?.configured ? formatMoney(netAnnual) : "Set mill levy"}</strong>
-            </div>
-            <div class="tax-stat">
-              <span>Est. monthly increase</span>
-              <strong>${payload.levy?.configured ? formatMoney(netMonthly) : "—"}</strong>
-            </div>
-          `;
-
-        card.innerHTML = `
-          <span class="match-type">${item.matchType}</span>
-          <h2><a href="${item.detailUrl}" target="_blank" rel="noopener">${item.accountNumber}</a></h2>
-          <p class="meta">${item.parcel || "Parcel unavailable"}</p>
-          <p class="summary">${item.summary}</p>
-          <div class="tax-grid">
-            <div class="tax-stat">
-              <span>Non-school assessed</span>
-              <strong>${formatMoney(assessed)}</strong>
-            </div>
-            ${increaseStats}
-          </div>
-          ${hasSenior ? `<p class="tax-note">Senior exemption applied (${formatMoney(item.levyImpact.seniorExemption)} credit at ${payload.levy?.millLevy} mills). <a href="${treasurerUrl}" target="_blank" rel="noopener">View TreasurerWeb bill</a></p>` : ""}
-        `;
-        resultsEl.appendChild(card);
-      }
-    }
-
-    form.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      const q = queryInput.value.trim();
-      if (!q) return;
-
-      submitBtn.disabled = true;
-      showError("");
-      showStatus("Searching EagleWeb, TreasurerWeb, and loading assessment values...");
-      resultsEl.innerHTML = "";
-
-      try {
-        const response = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
-        const payload = await response.json();
-
-        if (!response.ok) {
-          throw new Error(payload.error || "Search failed.");
-        }
-
-        showStatus(payload.message || "");
-        renderResults(payload);
-      } catch (error) {
-        showStatus("");
-        showError(error.message || "Something went wrong.");
-      } finally {
-        submitBtn.disabled = false;
-      }
-    });
-  </script>
 
   <script>
     const RECOVERY_TABLE = {
@@ -831,7 +507,7 @@
         explanation:
           "Arriving sooner increases the chance of surviving and recovering well after a serious injury. These are approximate, population-level estimates.",
         modalNote:
-          "Faster access to definitive care reduces death and long-term disability after major trauma because it enables bleeding control, surgery, blood transfusion, and specialist trauma care. Outcomes depend on injury severity, age, prehospital care, and whether the patient reaches a trauma center quickly.",
+          "Faster access to definitive care reduces death and long-term disability after major trauma because it enables bleeding control, surgery, blood transfusion, and specialist trauma care. Outcomes depend on injury severity, age, prehospital care, and whether the patient reaches a trauma center quickly. These numbers are conservative, population estimates for public education and conversation starting.",
         emergencyNotice:
           "If a serious injury occurs, call 911 now. Do not wait — EMS can start care on the way.",
         kind: "single",
@@ -852,11 +528,9 @@
       },
     };
 
-    function recoveryEl(id) {
-      return document.getElementById(id);
-    }
+    const $ = (id) => document.getElementById(id);
 
-    function interpolateRecovery(table, minutes) {
+    function interpolate(table, minutes) {
       const points = Object.keys(table).map(Number).sort((a, b) => a - b);
       const m = Math.min(Math.max(minutes, points[0]), points[points.length - 1]);
       if (m <= points[0]) return table[points[0]];
@@ -872,9 +546,9 @@
       return table[points[0]];
     }
 
-    function interpolateRecoveryRange(config, minutes) {
-      const low = interpolateRecovery(config.lowPoints, minutes);
-      const high = interpolateRecovery(config.highPoints, minutes);
+    function interpolateRange(config, minutes) {
+      const low = interpolate(config.lowPoints, minutes);
+      const high = interpolate(config.highPoints, minutes);
       return {
         low: Math.round(low),
         high: Math.round(high),
@@ -882,7 +556,7 @@
       };
     }
 
-    function formatRecoveryMinutes(minutes) {
+    function formatMinutes(minutes) {
       if (minutes < 60) return `${minutes} min`;
       const hrs = Math.floor(minutes / 60);
       const rem = minutes % 60;
@@ -890,75 +564,72 @@
       return `${hrs} hr ${rem} min`;
     }
 
-    function getRecoveryCondition() {
+    function getCondition() {
       return document.querySelector('input[name="condition"]:checked')?.value || "stroke";
     }
 
-    function updateRecoveryWidget() {
-      const minutes = Number(recoveryEl("minutes").value);
-      const condition = getRecoveryCondition();
+    function update() {
+      const minutes = Number($("minutes").value);
+      const condition = getCondition();
       const config = RECOVERY_TABLE[condition];
       const isRange = config.kind === "range";
       const percent = isRange
-        ? interpolateRecoveryRange(config, minutes)
-        : Math.round(interpolateRecovery(config.points, minutes));
+        ? interpolateRange(config, minutes)
+        : Math.round(interpolate(config.points, minutes));
       const severity = isRange ? percent.midpoint : percent;
 
-      recoveryEl("minutes").setAttribute("aria-valuenow", String(minutes));
-      recoveryEl("conditionExplanation").textContent = config.explanation;
-      recoveryEl("percentLabel").textContent = config.label;
-      recoveryEl("percentValue").textContent = isRange
-        ? `${percent.low}–${percent.high}%`
-        : `${percent}%`;
-      recoveryEl("percentValue").className = severity < 35 ? "very-low" : severity < 55 ? "low" : "";
-      recoveryEl("metricNote").textContent = config.metric;
-      recoveryEl("timeReadout").textContent = formatRecoveryMinutes(minutes);
-      recoveryEl("emergencyNotice").textContent = config.emergencyNotice;
-      recoveryEl("conditionModalText").textContent = config.modalNote;
+      $("minutes").setAttribute("aria-valuenow", String(minutes));
+      $("conditionExplanation").textContent = config.explanation;
+      $("percentLabel").textContent = config.label;
+      $("percentValue").textContent = isRange ? `${percent.low}–${percent.high}%` : `${percent}%`;
+      $("percentValue").className = severity < 35 ? "very-low" : severity < 55 ? "low" : "";
+      $("metricNote").textContent = config.metric;
+      $("timeReadout").textContent = formatMinutes(minutes);
+      $("emergencyNotice").textContent = config.emergencyNotice;
+      $("conditionModalText").textContent = config.modalNote;
 
-      recoveryEl("recoveryNote").textContent =
+      $("recoveryNote").textContent =
         condition === "ohca"
           ? "Survival depends heavily on immediate CPR and AED."
           : condition === "trauma"
             ? "Includes major bleeding, suspected internal injury, severe fractures, or head injury."
-            : severity >= 70
-              ? "Outcomes are often still favorable at this time — but sooner is better."
-              : severity >= 45
-                ? "Chances drop noticeably. Every minute counts."
-                : "Recovery chances are much lower at this delay.";
+          : severity >= 70
+            ? "Outcomes are often still favorable at this time — but sooner is better."
+            : severity >= 45
+              ? "Chances drop noticeably. Every minute counts."
+              : "Recovery chances are much lower at this delay.";
     }
 
     document.querySelectorAll('input[name="condition"]').forEach((el) => {
-      el.addEventListener("change", updateRecoveryWidget);
+      el.addEventListener("change", update);
     });
-    recoveryEl("minutes").addEventListener("input", updateRecoveryWidget);
+    $("minutes").addEventListener("input", update);
 
-    const recoveryModal = recoveryEl("recoveryModal");
-    let recoveryModalLastFocus = null;
+    const modal = $("modal");
+    let lastFocus = null;
 
-    function openRecoveryModal() {
-      recoveryModalLastFocus = document.activeElement;
-      recoveryModal.hidden = false;
-      recoveryModal.classList.add("open");
-      recoveryEl("recoveryModalClose").focus();
+    function openModal() {
+      lastFocus = document.activeElement;
+      modal.hidden = false;
+      modal.classList.add("open");
+      $("modalClose").focus();
     }
 
-    function closeRecoveryModal() {
-      recoveryModal.classList.remove("open");
-      recoveryModal.hidden = true;
-      recoveryModalLastFocus?.focus();
+    $("infoBtn").addEventListener("click", openModal);
+
+    function closeModal() {
+      modal.classList.remove("open");
+      modal.hidden = true;
+      lastFocus?.focus();
     }
 
-    recoveryEl("recoveryInfoBtn").addEventListener("click", openRecoveryModal);
-    recoveryEl("recoveryModalClose").addEventListener("click", closeRecoveryModal);
-    recoveryModal.addEventListener("click", (e) => {
-      if (e.target === recoveryModal) closeRecoveryModal();
-    });
+    $("modalClose").addEventListener("click", closeModal);
+    modal.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
     document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && recoveryModal.classList.contains("open")) closeRecoveryModal();
+      if (e.key === "Escape" && modal.classList.contains("open")) closeModal();
     });
 
-    updateRecoveryWidget();
+    update();
   </script>
 </body>
 </html>
