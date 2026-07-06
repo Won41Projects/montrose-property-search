@@ -777,10 +777,16 @@ function sendJson(res, statusCode, payload) {
 }
 
 function serveStatic(req, res) {
-  const requestPath = req.url === "/" ? "/index.html" : req.url;
-  const filePath = path.join(__dirname, "public", requestPath);
+  const urlPath = req.url === "/" ? "/index.html" : req.url.split("?")[0];
+  const rootDir = urlPath.startsWith("/spike/")
+    ? path.join(__dirname, "spike")
+    : path.join(__dirname, "public");
+  const requestPath = urlPath.startsWith("/spike/")
+    ? urlPath.slice("/spike".length) || "/community-benefit.html"
+    : urlPath;
+  const filePath = path.join(rootDir, requestPath);
 
-  if (!filePath.startsWith(path.join(__dirname, "public"))) {
+  if (!filePath.startsWith(rootDir)) {
     res.writeHead(403);
     res.end("Forbidden");
     return;
