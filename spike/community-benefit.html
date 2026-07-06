@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spike — Community benefit</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f4f6f8;
+      --panel: #ffffff;
+      --text: #1a2332;
+      --muted: #5c6b7a;
+      --accent: #1f4e79;
+      --positive: #0f6e4a;
+      --positive-bg: #e8f5ee;
+      --border: #d7dee7;
+      --error-bg: #fdecea;
+      --error-text: #8a1f11;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #12161c;
+        --panel: #1b222b;
+        --text: #e8edf3;
+        --muted: #9aa8b7;
+        --accent: #5b9bd5;
+        --positive: #6ecf9a;
+        --positive-bg: #152a21;
+        --border: #2d3744;
+        --error-bg: #3a1f1c;
+        --error-text: #f2b8b0;
+      }
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+      font-size: 18px;
+    }
+
+    main {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 32px 20px 56px;
+    }
+
+    .badge {
+      display: inline-block;
+      margin-bottom: 10px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      background: color-mix(in srgb, var(--accent) 14%, transparent);
+      color: var(--accent);
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: clamp(1.6rem, 4vw, 2rem);
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .lead {
+      margin: 0 0 20px;
+      color: var(--muted);
+      font-size: 1.05rem;
+      max-width: 40ch;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 24px 20px;
+      margin-bottom: 20px;
+      border-radius: 12px;
+      border: 2px solid var(--positive);
+      background: var(--positive-bg);
+    }
+
+    .hero-label {
+      margin: 0 0 6px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .hero-value {
+      margin: 0;
+      font-size: clamp(2.2rem, 8vw, 3.2rem);
+      font-weight: 800;
+      line-height: 1.05;
+      color: var(--positive);
+    }
+
+    .hero-sub {
+      margin: 10px 0 0;
+      font-size: 1rem;
+      color: var(--muted);
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    @media (min-width: 760px) {
+      .grid { grid-template-columns: 1fr 1.2fr; align-items: start; }
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px;
+    }
+
+    .panel h2 {
+      margin: 0 0 14px;
+      font-size: 1.1rem;
+      font-weight: 650;
+    }
+
+    .preset-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .preset-row button {
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: transparent;
+      color: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .preset-row button.active {
+      background: color-mix(in srgb, var(--accent) 14%, transparent);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    label.field {
+      display: block;
+      margin-bottom: 16px;
+      font-size: 0.95rem;
+    }
+
+    label.field span {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    label.field em {
+      display: block;
+      margin-top: 4px;
+      font-size: 0.85rem;
+      font-style: normal;
+      color: var(--muted);
+      font-weight: 400;
+    }
+
+    input[type="number"],
+    select {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 1.05rem;
+      background: transparent;
+      color: inherit;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent);
+    }
+
+    .search-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .search-row input[type="text"] {
+      flex: 1;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 1rem;
+      background: transparent;
+      color: inherit;
+    }
+
+    .search-row button {
+      padding: 12px 16px;
+      border: none;
+      border-radius: 8px;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .levy-note {
+      margin: 0 0 14px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--accent) 8%, transparent);
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .property-list {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .property-option {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+
+    .property-option:has(input:checked) {
+      border-color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 8%, transparent);
+    }
+
+    .property-option input {
+      margin-top: 3px;
+      accent-color: var(--accent);
+    }
+
+    .property-option em {
+      display: block;
+      font-size: 0.85rem;
+      font-style: normal;
+      color: var(--muted);
+    }
+
+    .section-gap {
+      margin-top: 8px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+    }
+
+    .search-error {
+      margin: 0 0 12px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: var(--error-bg);
+      color: var(--error-text);
+      font-size: 0.9rem;
+    }
+
+    .range-val {
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .benefit-cards {
+      display: grid;
+      gap: 10px;
+    }
+
+    .card {
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: color-mix(in srgb, var(--accent) 5%, transparent);
+    }
+
+    .card.community {
+      border-color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 10%, transparent);
+    }
+
+    .card span {
+      display: block;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .card strong {
+      font-size: 1.35rem;
+      line-height: 1.2;
+    }
+
+    .card p {
+      margin: 6px 0 0;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .compare-bar {
+      margin-top: 14px;
+    }
+
+    .bar-row { margin-bottom: 12px; }
+
+    .bar-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 4px;
+      font-size: 0.92rem;
+      font-weight: 600;
+    }
+
+    .bar-track {
+      height: 22px;
+      border-radius: 6px;
+      background: color-mix(in srgb, var(--border) 70%, transparent);
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 6px;
+      transition: width 0.2s ease;
+    }
+
+    .bar-fill.save { background: var(--positive); }
+    .bar-fill.cost { background: var(--error-text); }
+
+    .plain-list {
+      margin: 12px 0 0;
+      padding-left: 1.2rem;
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+
+    .sources {
+      margin-top: 20px;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .sources button {
+      padding: 0;
+      border: none;
+      background: none;
+      color: var(--accent);
+      font-weight: 600;
+      text-decoration: underline;
+      cursor: pointer;
+      font-size: inherit;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 100;
+    }
+
+    .modal-backdrop.open { display: flex; }
+
+    .modal {
+      width: min(560px, 100%);
+      max-height: 90vh;
+      overflow: auto;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+    }
+
+    .modal h2 { margin: 0 0 10px; font-size: 1.15rem; }
+    .modal p, .modal li { font-size: 0.9rem; color: var(--muted); }
+
+    .modal-close {
+      margin-top: 14px;
+      padding: 10px 16px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: transparent;
+      color: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <span class="badge">Spike — not deployed</span>
+    <h1>What the hospital means for you and our community</h1>
+    <p class="lead">
+      Plain-language look at <strong>money saved</strong>, <strong>local jobs</strong>,
+      and <strong>your levy from a property search</strong>. Adjust travel assumptions to match your situation.
+    </p>
+
+    <section class="hero" aria-live="polite">
+      <p class="hero-label" id="heroLabel">Your estimated 5-year net benefit</p>
+      <p class="hero-value" id="heroValue">—</p>
+      <p class="hero-sub" id="heroSub">Travel savings minus estimated property levy</p>
+    </section>
+
+    <div class="grid">
+      <aside class="panel">
+        <h2>Your property</h2>
+
+        <p class="levy-note" id="levyNote">
+          Search below to load your levy (includes senior exemption when applicable). Run this spike via the local server (<code>node server.mjs</code>).
+        </p>
+
+        <form id="propertySearch" class="search-row">
+          <input type="text" id="searchQuery" placeholder="Owner, account, or parcel" required />
+          <button type="submit">Search</button>
+        </form>
+        <p class="search-error" id="searchError" hidden></p>
+
+        <div class="property-list" id="propertyList" hidden></div>
+
+        <div class="section-gap">
+          <h2>About you</h2>
+        </div>
+
+        <div class="preset-row" id="presets">
+          <button type="button" data-preset="retired" class="active">Retired couple</button>
+          <button type="button" data-preset="family">Working family</button>
+          <button type="button" data-preset="senior">Senior alone</button>
+        </div>
+
+        <label class="field">
+          <span>Out-of-town medical trips per year</span>
+          <input type="range" id="trips" min="0" max="24" step="1" value="6" />
+          <em><span id="tripsVal" class="range-val">6</span> trips — doctor, ER, specialist, tests</em>
+        </label>
+
+        <label class="field">
+          <span>How far you drive now (one way)</span>
+          <select id="distance">
+            <option value="85">About 85 miles (e.g. Montrose area)</option>
+            <option value="132">About 132 miles (e.g. Grand Junction area)</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Share of trips needing a hotel night</span>
+          <input type="range" id="hotelShare" min="0" max="100" step="5" value="20" />
+          <em><span id="hotelShareVal" class="range-val">20</span>% of trips</em>
+        </label>
+
+        <label class="field">
+          <span>Lost pay per trip (if still working)</span>
+          <select id="lostWages">
+            <option value="0">None — retired or not working</option>
+            <option value="121">About $121 (8 hours)</option>
+            <option value="160">About $160 (8 hours)</option>
+            <option value="200">About $200 (8 hours)</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Years to compare</span>
+          <select id="years">
+            <option value="5" selected>5 years</option>
+            <option value="10">10 years</option>
+          </select>
+        </label>
+      </aside>
+
+      <section class="panel">
+        <h2>Community &amp; household benefit</h2>
+
+        <div class="benefit-cards">
+          <article class="card community">
+            <span>Our community</span>
+            <strong id="communityJobs">101 local jobs</strong>
+            <p id="communityWages">About $8 million a year in local wages and benefits (hospital and related businesses).</p>
+          </article>
+
+          <article class="card">
+            <span>Your household — travel saved</span>
+            <strong id="annualSavings">—</strong>
+            <p id="tripBreakdown">Per trip estimate includes gas, a meal, and sometimes a hotel.</p>
+          </article>
+
+          <article class="card">
+            <span>Your household — levy (from search)</span>
+            <strong id="annualLevy">—</strong>
+            <p id="levyDetail">Search for your property to load EagleWeb + TreasurerWeb levy.</p>
+          </article>
+        </div>
+
+        <div class="compare-bar">
+          <div class="bar-row">
+            <div class="bar-head">
+              <span>5-year travel savings</span>
+              <strong id="barSaveLabel">—</strong>
+            </div>
+            <div class="bar-track"><div class="bar-fill save" id="barSave" style="width:0"></div></div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-head">
+              <span id="barLevyTitle">5-year levy</span>
+              <strong id="barLevyLabel">—</strong>
+            </div>
+            <div class="bar-track"><div class="bar-fill cost" id="barLevy" style="width:0"></div></div>
+          </div>
+        </div>
+
+        <ul class="plain-list" id="plainTakeaways"></ul>
+      </section>
+    </div>
+
+    <p class="sources">
+      Data from <button type="button" id="sourcesBtn">Travel Costs spreadsheet</button>
+      and <button type="button" id="econBtn">NCRHW economic impact report (Ex. G)</button>.
+      Spike for discussion — not a financial or medical promise.
+    </p>
+  </main>
+
+  <div class="modal-backdrop" id="modal" hidden>
+    <div class="modal" role="dialog" aria-labelledby="modalTitle">
+      <h2 id="modalTitle">Sources</h2>
+      <p id="modalBody"></p>
+      <button type="button" class="modal-close" id="modalClose">Close</button>
+    </div>
+  </div>
+
+  <script>
+    const MILE_RATE = 0.70;
+    const MEAL_PER_TRIP = 24;
+    const HOTEL_PER_NIGHT = 104;
+    const ECON = {
+      jobs: 101,
+      wagesLabel: "$8 million",
+      wagesDetail: "$8.03 million total wages, salaries, and benefits (NCRHW, Jan 2026)",
+    };
+
+    const PRESETS = {
+      retired: { trips: 8, distance: 85, hotelShare: 25, lostWages: 0 },
+      family: { trips: 4, distance: 132, hotelShare: 15, lostWages: 160 },
+      senior: { trips: 6, distance: 85, hotelShare: 20, lostWages: 0 },
+    };
+
+    let searchResults = [];
+
+    const $ = (id) => document.getElementById(id);
+    const money = (n) => {
+      if (n == null || Number.isNaN(n)) return "—";
+      return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(n);
+    };
+
+    function tripCost(oneWayMiles, hotelSharePct, lostWages) {
+      const gas = oneWayMiles * 2 * MILE_RATE;
+      const hotel = (hotelSharePct / 100) * HOTEL_PER_NIGHT;
+      return gas + MEAL_PER_TRIP + hotel + lostWages;
+    }
+
+    function levyFromResult(item) {
+      if (!item?.levyImpact) return null;
+      return item.levyImpact.annualIncreaseNet ?? item.levyImpact.annualIncrease ?? null;
+    }
+
+    function selectedResults() {
+      if (!searchResults.length) return [];
+      const list = $("propertyList");
+      if (list.hidden) return searchResults;
+      const checked = [...list.querySelectorAll('input[type="checkbox"]:checked')].map(
+        (input) => searchResults[Number(input.value)],
+      );
+      return checked.filter(Boolean);
+    }
+
+    function totalSelectedLevy(items) {
+      let total = 0;
+      let hasAny = false;
+      for (const item of items) {
+        const levy = levyFromResult(item);
+        if (levy != null) {
+          total += levy;
+          hasAny = true;
+        }
+      }
+      return hasAny ? total : null;
+    }
+
+    function renderPropertyList() {
+      const list = $("propertyList");
+      list.innerHTML = "";
+
+      if (searchResults.length <= 1) {
+        list.hidden = true;
+        return;
+      }
+
+      list.hidden = false;
+      list.innerHTML = searchResults
+        .map((item, i) => {
+          const levy = levyFromResult(item);
+          const senior = item.levyImpact?.hasSeniorExemption ? " · senior exemption" : "";
+          const levyLabel = levy != null ? money(levy) + "/year" : "levy unavailable";
+          return `
+            <label class="property-option">
+              <input type="checkbox" value="${i}" checked />
+              <span>
+                ${item.accountNumber}
+                <em>${levyLabel}${senior}</em>
+              </span>
+            </label>
+          `;
+        })
+        .join("");
+    }
+
+    function updateLevyNote() {
+      const selected = selectedResults();
+      const note = $("levyNote");
+      if (!selected.length) {
+        if (!searchResults.length) {
+          note.textContent =
+            "Search below to load your levy (includes senior exemption when applicable).";
+        } else {
+          note.textContent = "Select at least one property below to include in your levy total.";
+        }
+        return;
+      }
+
+      const total = totalSelectedLevy(selected);
+      if (total == null) {
+        note.textContent = "Levy could not be loaded for the selected properties.";
+        return;
+      }
+
+      if (selected.length === 1) {
+        const item = selected[0];
+        const senior = item.levyImpact?.hasSeniorExemption;
+        note.textContent =
+          `Levy for ${item.accountNumber}: ${money(total)}/year from EagleWeb + TreasurerWeb` +
+          (senior ? " (senior exemption included)." : ".");
+        return;
+      }
+
+      note.textContent =
+        `${selected.length} properties selected — ${money(total)}/year combined levy from EagleWeb + TreasurerWeb.`;
+    }
+
+    function render() {
+      const trips = Number($("trips").value);
+      const oneWay = Number($("distance").value);
+      const hotelShare = Number($("hotelShare").value);
+      const lostWages = Number($("lostWages").value);
+      const years = Number($("years").value);
+      const selected = selectedResults();
+      const levy = totalSelectedLevy(selected);
+
+      updateLevyNote();
+
+      $("tripsVal").textContent = trips;
+      $("hotelShareVal").textContent = hotelShare;
+
+      const perTrip = tripCost(oneWay, hotelShare, lostWages);
+      const gas = oneWay * 2 * MILE_RATE;
+      const annualSave = trips * perTrip;
+      const totalSave = annualSave * years;
+      const totalLevy = levy != null ? levy * years : null;
+      const net = totalLevy != null ? totalSave - totalLevy : null;
+
+      $("communityJobs").textContent = `${ECON.jobs} local jobs`;
+      $("communityWages").textContent =
+        `About ${ECON.wagesLabel} a year in local wages and benefits (hospital and related businesses).`;
+
+      $("annualSavings").textContent = `${money(annualSave)} / year`;
+      $("tripBreakdown").textContent =
+        `About ${money(perTrip)} per trip — gas ${money(gas)}, meal ${money(MEAL_PER_TRIP)}` +
+        (hotelShare > 0 ? `, hotel share ${money((hotelShare / 100) * HOTEL_PER_NIGHT)}` : "") +
+        (lostWages > 0 ? `, lost pay ${money(lostWages)}` : "") + ".";
+
+      if (levy != null && selected.length) {
+        $("annualLevy").textContent = `${money(levy)} / year`;
+        $("levyDetail").textContent =
+          selected.length === 1
+            ? `Account ${selected[0].accountNumber} — from your search results.`
+            : `${selected.length} accounts selected — combined levy from your search results.`;
+      } else {
+        $("annualLevy").textContent = "—";
+        $("levyDetail").textContent = "Search for your property to load EagleWeb + TreasurerWeb levy.";
+      }
+
+      $("heroLabel").textContent = `Your estimated ${years}-year net benefit`;
+      if (net != null) {
+        $("heroValue").textContent = money(net);
+        $("heroValue").style.color = net >= 0 ? "var(--positive)" : "var(--error-text)";
+        $("heroSub").textContent =
+          net >= 0
+            ? `${money(totalSave)} in avoided travel costs minus ${money(totalLevy)} levy from search`
+            : `Levy exceeds travel savings by ${money(Math.abs(net))} over ${years} years`;
+      } else {
+        $("heroValue").textContent = money(totalSave);
+        $("heroValue").style.color = "var(--positive)";
+        $("heroSub").textContent = "Search a property to subtract your levy";
+      }
+
+      $("barLevyTitle").textContent = `${years}-year levy`;
+      $("barSaveLabel").textContent = money(totalSave);
+      $("barLevyLabel").textContent = totalLevy != null ? money(totalLevy) : "—";
+      const maxBar = Math.max(totalSave, totalLevy ?? 0, 1);
+      $("barSave").style.width = `${(totalSave / maxBar) * 100}%`;
+      $("barLevy").style.width = totalLevy != null ? `${(totalLevy / maxBar) * 100}%` : "0%";
+
+      const ratio = totalLevy > 0 ? (totalSave / totalLevy).toFixed(1) : "—";
+      const takeaways = [
+        `A local hospital means care closer to home and fewer long drives.`,
+        `This example saves about ${money(annualSave)} per year in travel-related costs.`,
+        `The community gains about ${ECON.jobs} jobs and ${ECON.wagesLabel} in local payroll.`,
+      ];
+      if (net != null && net > 0 && totalLevy > 0) {
+        takeaways.push(`Over ${years} years, travel savings are about ${ratio}× the levy from your search.`);
+      }
+      $("plainTakeaways").innerHTML = takeaways.map((t) => `<li>${t}</li>`).join("");
+    }
+
+    $("propertySearch").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const q = $("searchQuery").value.trim();
+      if (!q) return;
+
+      const errEl = $("searchError");
+      errEl.hidden = true;
+
+      try {
+        const response = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
+        const payload = await response.json();
+        if (!response.ok) throw new Error(payload.error || "Search failed.");
+
+        searchResults = payload.results ?? [];
+        renderPropertyList();
+        render();
+      } catch (error) {
+        searchResults = [];
+        $("propertyList").innerHTML = "";
+        $("propertyList").hidden = true;
+        errEl.textContent = error.message || "Search failed. Open via http://localhost:3847/spike/community-benefit.html";
+        errEl.hidden = false;
+        render();
+      }
+    });
+
+    $("propertyList").addEventListener("change", render);
+
+    document.querySelectorAll("#presets button").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll("#presets button").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        const p = PRESETS[btn.dataset.preset];
+        $("trips").value = p.trips;
+        $("distance").value = String(p.distance);
+        $("hotelShare").value = p.hotelShare;
+        $("lostWages").value = String(p.lostWages);
+        render();
+      });
+    });
+
+    ["trips", "hotelShare", "distance", "lostWages", "years"].forEach((id) => {
+      $(id).addEventListener("input", render);
+      $(id).addEventListener("change", render);
+    });
+
+    const modal = $("modal");
+    function openModal(title, body) {
+      $("modalTitle").textContent = title;
+      $("modalBody").textContent = body;
+      modal.hidden = false;
+      modal.classList.add("open");
+    }
+    function closeModal() {
+      modal.classList.remove("open");
+      modal.hidden = true;
+    }
+
+    $("sourcesBtn").addEventListener("click", () => openModal(
+      "Travel Costs spreadsheet",
+      "Mileage at $0.70/mile. One-way distances: 85 miles (~$119 round-trip gas) and 132 miles (~$185 round-trip gas). Meals use a $24 average (casual sit-down). Hotel uses a $104/night mid-range average when overnight stays apply.",
+    ));
+    $("econBtn").addEventListener("click", () => openModal(
+      "Economic Impact report (Ex. G)",
+      "National Center for Rural Health Works study for West End Health Service District Critical Access Hospital (Jan 2026): 75 direct jobs, 26 secondary jobs, 101 total. $6.75M direct wages and $8.03M total wages, salaries, and benefits using averaged rural hospital multipliers.",
+    ));
+    $("modalClose").addEventListener("click", closeModal);
+    modal.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
+
+    render();
+  </script>
+</body>
+</html>

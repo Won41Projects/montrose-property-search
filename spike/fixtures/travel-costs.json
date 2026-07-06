@@ -1,0 +1,33 @@
+{
+  "source": "Travel Costs.xlsx",
+  "mileageRatePerMile": 0.7,
+  "distances": {
+    "nearer": {
+      "oneWayMiles": 85,
+      "label": "About 85 miles one way"
+    },
+    "farther": {
+      "oneWayMiles": 132,
+      "label": "About 132 miles one way"
+    }
+  },
+  "meals": {
+    "fastFood": 12.5,
+    "fastCasual": 15,
+    "casualSitDown": 24,
+    "midLevel": 30,
+    "defaultPerTrip": 24
+  },
+  "hotelOneNight": {
+    "budget": 63,
+    "mid": 104,
+    "upper": 179,
+    "default": 104
+  },
+  "lostWages8Hours": {
+    "rate15": 121.28,
+    "rate20": 160,
+    "rate25": 200,
+    "rate30": 240
+  }
+}
