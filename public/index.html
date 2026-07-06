@@ -921,6 +921,11 @@
             <em><span id="benefitHotelShareVal">20</span>% of trips</em>
           </label>
           <label class="benefit-field">
+            <span>Meal per out-of-town trip</span>
+            <input type="range" id="benefitMeal" min="15" max="60" step="1" value="24" />
+            <em id="benefitMealLabel">$24 per trip (mid-range average)</em>
+          </label>
+          <label class="benefit-field">
             <span>Lost pay per trip (if working)</span>
             <select id="benefitLostWages">
               <option value="0">None</option>
@@ -949,19 +954,14 @@
           </article>
 
           <details class="benefit-advanced">
-            <summary>Adjust meal &amp; hotel assumptions</summary>
-            <label class="benefit-field">
-              <span>Meal per out-of-town trip</span>
-              <input type="range" id="benefitMealTier" min="0" max="3" step="1" value="2" />
-              <em id="benefitMealTierLabel">Casual sit-down ($24)</em>
-            </label>
+            <summary>Adjust hotel per night</summary>
             <label class="benefit-field">
               <span>Hotel per night (when overnight)</span>
               <input type="range" id="benefitHotelTier" min="0" max="2" step="1" value="1" />
               <em id="benefitHotelTierLabel">Mid-range ($104/night)</em>
             </label>
             <p class="benefit-advanced-hint">
-              Tiers from the Travel Costs spreadsheet. Distance (100 miles one way) and gas ($0.70/mile) use fixed defaults.
+              Hotel tiers from the Travel Costs spreadsheet. Distance (100 miles one way) and gas ($0.70/mile) use fixed defaults.
             </p>
           </details>
         </div>
@@ -1314,12 +1314,9 @@
     const BENEFIT_MILE_RATE = 0.7;
     const BENEFIT_ONE_WAY_MILES = 100;
     const BENEFIT_GAS_PER_TRIP = BENEFIT_ONE_WAY_MILES * 2 * BENEFIT_MILE_RATE;
-    const BENEFIT_MEAL_TIERS = [
-      { value: 12.5, label: "Fast food (~$13)" },
-      { value: 15, label: "Fast casual ($15)" },
-      { value: 24, label: "Casual sit-down ($24)" },
-      { value: 30, label: "Mid-level ($30)" },
-    ];
+    const BENEFIT_MEAL_MIN = 15;
+    const BENEFIT_MEAL_MAX = 60;
+    const BENEFIT_MEAL_DEFAULT = 24;
     const BENEFIT_HOTEL_TIERS = [
       { value: 63, label: "Budget ($63/night)" },
       { value: 104, label: "Mid-range ($104/night)" },
@@ -1346,9 +1343,9 @@
       return BENEFIT_GAS_PER_TRIP + meal + hotel + lostWages;
     }
 
-    function getBenefitMealTier() {
-      const idx = Number(document.getElementById("benefitMealTier")?.value ?? 2);
-      return BENEFIT_MEAL_TIERS[idx] ?? BENEFIT_MEAL_TIERS[2];
+    function getBenefitMeal() {
+      const raw = Number(document.getElementById("benefitMeal")?.value ?? BENEFIT_MEAL_DEFAULT);
+      return Math.min(BENEFIT_MEAL_MAX, Math.max(BENEFIT_MEAL_MIN, raw));
     }
 
     function getBenefitHotelTier() {
@@ -1465,7 +1462,7 @@
       const hotelShare = Number(document.getElementById("benefitHotelShare").value);
       const lostWages = Number(document.getElementById("benefitLostWages").value);
       const years = Number(document.getElementById("benefitYears").value);
-      const mealTier = getBenefitMealTier();
+      const meal = getBenefitMeal();
       const hotelTier = getBenefitHotelTier();
       const selected = getSelectedBenefitProperty();
       const levy = selected ? levyFromSearchResult(selected) : null;
@@ -1476,11 +1473,13 @@
       document.getElementById("benefitHotelShareVal").textContent = hotelShare;
       document.getElementById("benefitHotelLabel").textContent =
         `Hotel (based on ${hotelShare}% of trips needing overnight stay)`;
-      document.getElementById("benefitMealTierLabel").textContent = mealTier.label;
+      document.getElementById("benefitMealLabel").textContent =
+        meal === BENEFIT_MEAL_DEFAULT
+          ? `$${meal} per trip (mid-range average)`
+          : `$${meal} per trip`;
       document.getElementById("benefitHotelTierLabel").textContent = hotelTier.label;
 
       const gas = BENEFIT_GAS_PER_TRIP;
-      const meal = mealTier.value;
       const hotelShareAmt = (hotelShare / 100) * hotelTier.value;
       const perTrip = benefitTripCost(hotelShare, lostWages, meal, hotelTier.value);
       const annualSave = trips * perTrip;
@@ -1572,7 +1571,7 @@
     document.getElementById("search-toggle-btn")?.addEventListener("click", expandSearchSection);
     document.getElementById("change-property-btn")?.addEventListener("click", expandForPropertyChange);
 
-    ["benefitTrips", "benefitHotelShare", "benefitLostWages", "benefitYears", "benefitMealTier", "benefitHotelTier"].forEach((id) => {
+    ["benefitTrips", "benefitHotelShare", "benefitMeal", "benefitLostWages", "benefitYears", "benefitHotelTier"].forEach((id) => {
       const el = document.getElementById(id);
       el?.addEventListener("input", renderBenefitPanel);
       el?.addEventListener("change", renderBenefitPanel);
