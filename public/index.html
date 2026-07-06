@@ -90,6 +90,62 @@
       padding: 20px;
     }
 
+    .search-section {
+      margin-bottom: 4px;
+    }
+
+    .search-section-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .search-section-top .section-title {
+      margin: 0;
+    }
+
+    .search-toggle-btn {
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: transparent;
+      color: var(--accent);
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .search-toggle-btn:hover {
+      background: color-mix(in srgb, var(--accent) 8%, transparent);
+    }
+
+    .search-section.collapsed .search-section-body,
+    .search-section.collapsed #search-subtitle {
+      display: none;
+    }
+
+    .search-collapsed-summary {
+      display: none;
+      margin: 0;
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--panel);
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+
+    .search-section.collapsed .search-collapsed-summary {
+      display: block;
+    }
+
+    .search-collapsed-summary strong {
+      color: var(--text);
+    }
+
     form {
       display: flex;
       gap: 10px;
@@ -152,6 +208,27 @@
       border: 1px solid var(--border);
       border-radius: 10px;
       padding: 16px 18px;
+    }
+
+    .result-card.included {
+      border-color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 5%, var(--panel));
+    }
+
+    .result-include {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      font-size: 0.92rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .result-include input {
+      accent-color: var(--accent);
     }
 
     .result-card h2 {
@@ -360,56 +437,12 @@
     }
 
     .benefit-levy-note {
-      margin: 0 0 12px;
+      margin: 0 0 16px;
       padding: 10px 12px;
       border-radius: 8px;
       background: color-mix(in srgb, var(--accent) 8%, transparent);
       font-size: 0.9rem;
       color: var(--muted);
-    }
-
-    .benefit-property-list {
-      display: grid;
-      gap: 8px;
-      margin-bottom: 18px;
-    }
-
-    .benefit-property-option {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      padding: 10px 12px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: 0.92rem;
-      cursor: pointer;
-    }
-
-    .benefit-property-option:has(input:checked) {
-      border-color: var(--accent);
-      background: color-mix(in srgb, var(--accent) 8%, transparent);
-    }
-
-    .benefit-property-option input {
-      margin-top: 3px;
-      accent-color: var(--accent);
-    }
-
-    .benefit-property-option span {
-      line-height: 1.35;
-    }
-
-    .benefit-property-option em {
-      display: block;
-      font-size: 0.85rem;
-      font-style: normal;
-      color: var(--muted);
-    }
-
-    .benefit-section-gap {
-      margin-top: 8px;
-      padding-top: 18px;
-      border-top: 1px solid var(--border);
     }
 
     .benefit-card {
@@ -723,23 +756,35 @@
     <header>
       <h1 id="page-title">Proposed West End Health Service District</h1>
       <p class="levy-detail" id="levy-detail">Loading levy information…</p>
-      <h2 class="section-title">Property Search</h2>
-      <p class="subtitle">Search by owner name, account number, or parcel number.</p>
     </header>
 
-    <section class="search-panel">
-      <form id="search-form">
-        <input
-          id="query"
-          name="q"
-          type="search"
-          placeholder="e.g. Jane Doe, R0007980, 4269-302-00-055"
-          autocomplete="off"
-          required
-        />
-        <button type="submit" id="submit-btn">Search</button>
-      </form>
-      <p class="hint">Owner names work as first-last or last-first.</p>
+    <section class="search-section" id="search-section">
+      <div class="search-section-top">
+        <h2 class="section-title">Property Search</h2>
+        <button type="button" class="search-toggle-btn" id="search-toggle-btn" hidden>
+          Edit search
+        </button>
+      </div>
+      <p class="subtitle" id="search-subtitle">Search by owner name, account number, or parcel number.</p>
+
+      <div class="search-section-body">
+        <section class="search-panel">
+          <form id="search-form">
+            <input
+              id="query"
+              name="q"
+              type="search"
+              placeholder="e.g. Jane Doe, R0007980, 4269-302-00-055"
+              autocomplete="off"
+              required
+            />
+            <button type="submit" id="submit-btn">Search</button>
+          </form>
+          <p class="hint">Owner names work as first-last or last-first.</p>
+        </section>
+      </div>
+
+      <p class="search-collapsed-summary" id="search-collapsed-summary" hidden></p>
     </section>
 
     <div id="status" class="status" hidden></div>
@@ -749,7 +794,11 @@
     <section class="benefit-panel" id="benefit-panel" aria-labelledby="benefit-title">
       <h2 class="section-title" id="benefit-title">What you gain vs. what you pay</h2>
       <p class="subtitle" style="margin-bottom: 12px;">
-        Travel savings for your household compared to the levy from your property search above.
+        Travel savings for your household compared to the levy from properties you select in your search results.
+      </p>
+
+      <p class="benefit-levy-note" id="benefitLevyNote">
+        Search for your property above, then check which results to include (includes senior exemption when applicable).
       </p>
 
       <div class="benefit-hero" aria-live="polite">
@@ -760,16 +809,8 @@
 
       <div class="benefit-grid">
         <div class="benefit-controls">
-          <h3>Your property</h3>
-          <p class="benefit-levy-note" id="benefitLevyNote">
-            Search for your property above to load your levy estimate (includes senior exemption when applicable).
-          </p>
-          <div class="benefit-property-list" id="benefitPropertyList" hidden></div>
-
-          <div class="benefit-section-gap">
-            <h3>About you</h3>
-            <p class="subtitle" style="margin: 0 0 12px; font-size: 0.92rem;">Your travel (adjust if needed)</p>
-          </div>
+          <h3>About you</h3>
+          <p class="subtitle" style="margin: 0 0 12px; font-size: 0.92rem;">Your travel (adjust if needed)</p>
           <div class="benefit-preset-row" id="benefitPresets">
             <button type="button" data-preset="retired" class="active">Retired couple</button>
             <button type="button" data-preset="family">Working family</button>
@@ -1036,9 +1077,11 @@
       resultsEl.innerHTML = "";
       if (!payload.results?.length) return;
 
-      for (const item of payload.results) {
+      for (let i = 0; i < payload.results.length; i++) {
+        const item = payload.results[i];
         const card = document.createElement("article");
         card.className = "result-card";
+        card.dataset.resultIndex = String(i);
 
         const assessed = item.assessment?.nonSchoolAssessedValue;
         const grossAnnual = item.levyImpact?.annualIncreaseGross;
@@ -1087,6 +1130,10 @@
             ${increaseStats}
           </div>
           ${hasSenior ? `<p class="tax-note">Senior exemption applied (${formatMoney(item.levyImpact.seniorExemption)} credit at ${payload.levy?.millLevy} mills). <a href="${treasurerUrl}" target="_blank" rel="noopener">View TreasurerWeb bill</a></p>` : ""}
+          <label class="result-include">
+            <input type="checkbox" class="result-include-input" value="${i}" />
+            <span>Include in benefit comparison</span>
+          </label>
         `;
         resultsEl.appendChild(card);
       }
@@ -1095,11 +1142,8 @@
 
     function clearBenefitSearch() {
       window.benefitSearchResults = [];
-      const list = document.getElementById("benefitPropertyList");
-      list.innerHTML = "";
-      list.hidden = true;
       document.getElementById("benefitLevyNote").textContent =
-        "Search for your property above to load your levy estimate (includes senior exemption when applicable).";
+        "Search for your property above, then check which results to include (includes senior exemption when applicable).";
       renderBenefitPanel();
     }
 
@@ -1108,11 +1152,13 @@
       const q = queryInput.value.trim();
       if (!q) return;
 
+      window.lastSearchQuery = q;
       submitBtn.disabled = true;
       showError("");
       showStatus("Searching EagleWeb, TreasurerWeb, and loading assessment values...");
       resultsEl.innerHTML = "";
       clearBenefitSearch();
+      expandSearchSection();
 
       try {
         const response = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
@@ -1144,6 +1190,7 @@
     };
 
     window.benefitSearchResults = [];
+    window.lastSearchQuery = "";
 
     function benefitMoney(n) {
       if (n == null || Number.isNaN(n)) return "—";
@@ -1159,12 +1206,9 @@
     function getSelectedBenefitResults() {
       const results = window.benefitSearchResults;
       if (!results.length) return [];
-      const list = document.getElementById("benefitPropertyList");
-      if (list.hidden) return results;
-      const checked = [...list.querySelectorAll('input[type="checkbox"]:checked')].map(
-        (input) => results[Number(input.value)],
-      );
-      return checked.filter(Boolean);
+      return [...document.querySelectorAll("#results .result-include-input:checked")]
+        .map((input) => results[Number(input.value)])
+        .filter(Boolean);
     }
 
     function levyFromSearchResult(item) {
@@ -1185,33 +1229,33 @@
       return hasAny ? total : null;
     }
 
-    function renderBenefitPropertyList() {
-      const results = window.benefitSearchResults;
-      const list = document.getElementById("benefitPropertyList");
-      list.innerHTML = "";
+    function updateSearchSectionCollapse() {
+      const section = document.getElementById("search-section");
+      const toggleBtn = document.getElementById("search-toggle-btn");
+      const summary = document.getElementById("search-collapsed-summary");
+      const selected = getSelectedBenefitResults();
+      const shouldCollapse = selected.length > 0;
 
-      if (results.length <= 1) {
-        list.hidden = true;
-        return;
+      section.classList.toggle("collapsed", shouldCollapse);
+      toggleBtn.hidden = !shouldCollapse;
+
+      if (shouldCollapse) {
+        const accounts = selected.map((item) => item.accountNumber).join(", ");
+        const queryLabel = window.lastSearchQuery ? ` for “${window.lastSearchQuery}”` : "";
+        summary.hidden = false;
+        summary.innerHTML =
+          `<strong>${selected.length} propert${selected.length === 1 ? "y" : "ies"} selected</strong>${queryLabel}: ${accounts}`;
+      } else {
+        summary.hidden = true;
+        summary.textContent = "";
       }
+    }
 
-      list.hidden = false;
-      list.innerHTML = results
-        .map((item, i) => {
-          const levy = levyFromSearchResult(item);
-          const senior = item.levyImpact?.hasSeniorExemption ? " · senior exemption" : "";
-          const levyLabel = levy != null ? benefitMoney(levy) + "/year" : "levy unavailable";
-          return `
-            <label class="benefit-property-option">
-              <input type="checkbox" value="${i}" checked />
-              <span>
-                ${item.accountNumber}
-                <em>${levyLabel}${senior}</em>
-              </span>
-            </label>
-          `;
-        })
-        .join("");
+    function expandSearchSection() {
+      document.getElementById("search-section").classList.remove("collapsed");
+      document.getElementById("search-toggle-btn").hidden = true;
+      document.getElementById("search-collapsed-summary").hidden = true;
+      document.getElementById("query").focus();
     }
 
     function updateBenefitLevyNote() {
@@ -1220,9 +1264,10 @@
       if (!selected.length) {
         if (!window.benefitSearchResults.length) {
           note.textContent =
-            "Search for your property above to load your levy estimate (includes senior exemption when applicable).";
+            "Search for your property above, then check which results to include (includes senior exemption when applicable).";
         } else {
-          note.textContent = "Select at least one property below to include in your levy total.";
+          note.textContent =
+            "Check one or more properties in your search results above to include them in your levy total.";
         }
         return;
       }
@@ -1254,7 +1299,6 @@
         return;
       }
 
-      renderBenefitPropertyList();
       updateBenefitLevyNote();
       renderBenefitPanel();
     }
@@ -1291,7 +1335,10 @@
             : `${selected.length} accounts selected — combined levy from your search results.`;
       } else {
         document.getElementById("benefitAnnualLevy").textContent = "—";
-        document.getElementById("benefitLevyDetail").textContent = "Search for a property above.";
+        document.getElementById("benefitLevyDetail").textContent =
+          window.benefitSearchResults.length
+            ? "Check properties in your search results above."
+            : "Search for a property above.";
       }
 
       const hero = document.getElementById("benefitHeroValue");
@@ -1306,7 +1353,10 @@
       } else {
         hero.textContent = benefitMoney(totalSave);
         hero.style.color = "var(--good)";
-        document.getElementById("benefitHeroSub").textContent = "Search a property to subtract your levy";
+        document.getElementById("benefitHeroSub").textContent =
+          window.benefitSearchResults.length
+            ? "Check properties in your search results to subtract your levy"
+            : "Search a property to subtract your levy";
       }
 
       document.getElementById("benefitBarSaveTitle").textContent = `${years}-year savings`;
@@ -1330,6 +1380,8 @@
       }
       document.getElementById("benefitTakeaways").innerHTML =
         takeaways.map((t) => `<li>${t}</li>`).join("");
+
+      updateSearchSectionCollapse();
     }
 
     document.querySelectorAll("#benefitPresets button").forEach((btn) => {
@@ -1345,13 +1397,19 @@
       });
     });
 
+    document.getElementById("results")?.addEventListener("change", (event) => {
+      if (!event.target.matches(".result-include-input")) return;
+      event.target.closest(".result-card")?.classList.toggle("included", event.target.checked);
+      renderBenefitPanel();
+    });
+
+    document.getElementById("search-toggle-btn")?.addEventListener("click", expandSearchSection);
+
     ["benefitTrips", "benefitHotelShare", "benefitDistance", "benefitLostWages", "benefitYears"].forEach((id) => {
       const el = document.getElementById(id);
       el?.addEventListener("input", renderBenefitPanel);
       el?.addEventListener("change", renderBenefitPanel);
     });
-
-    document.getElementById("benefitPropertyList")?.addEventListener("change", renderBenefitPanel);
 
     renderBenefitPanel();
   </script>
