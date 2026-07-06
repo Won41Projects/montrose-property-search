@@ -942,7 +942,7 @@
             <ul class="benefit-breakdown-list">
               <li><span>Gas <em>(100 mi × 2 × $0.70/mi)</em></span> <strong id="benefitGasAmt">—</strong></li>
               <li><span>Meal</span> <strong id="benefitMealAmt">—</strong></li>
-              <li><span>Hotel share</span> <strong id="benefitHotelAmt">—</strong></li>
+              <li><span id="benefitHotelLabel">Hotel (based on 20% of trips needing overnight stay)</span> <strong id="benefitHotelAmt">—</strong></li>
               <li><span>Lost pay</span> <strong id="benefitPayAmt">—</strong></li>
             </ul>
             <p class="benefit-breakdown-total">Total per trip: <strong id="benefitPerTripTotal">—</strong></p>
@@ -1474,6 +1474,8 @@
 
       document.getElementById("benefitTripsVal").textContent = trips;
       document.getElementById("benefitHotelShareVal").textContent = hotelShare;
+      document.getElementById("benefitHotelLabel").textContent =
+        `Hotel (based on ${hotelShare}% of trips needing overnight stay)`;
       document.getElementById("benefitMealTierLabel").textContent = mealTier.label;
       document.getElementById("benefitHotelTierLabel").textContent = hotelTier.label;
 
