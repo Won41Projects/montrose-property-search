@@ -210,27 +210,6 @@
       padding: 16px 18px;
     }
 
-    .result-card.included {
-      border-color: var(--accent);
-      background: color-mix(in srgb, var(--accent) 5%, var(--panel));
-    }
-
-    .result-include {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-top: 14px;
-      padding-top: 12px;
-      border-top: 1px solid var(--border);
-      font-size: 0.92rem;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    .result-include input {
-      accent-color: var(--accent);
-    }
-
     .result-card h2 {
       margin: 0 0 8px;
       font-size: 1.05rem;
@@ -740,6 +719,48 @@
 
     .modal-close:hover { background: color-mix(in srgb, var(--accent) 8%, transparent); }
 
+    .property-pick-list {
+      display: grid;
+      gap: 10px;
+      margin: 16px 0;
+    }
+
+    .property-pick-option {
+      display: block;
+      width: 100%;
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: transparent;
+      color: inherit;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .property-pick-option:hover {
+      border-color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 8%, transparent);
+    }
+
+    .property-pick-option strong {
+      display: block;
+      font-size: 1rem;
+      margin-bottom: 4px;
+      color: var(--text);
+    }
+
+    .property-pick-option span {
+      display: block;
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    .search-section-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
     .sr-only {
       position: absolute;
       width: 1px; height: 1px;
@@ -761,9 +782,14 @@
     <section class="search-section" id="search-section">
       <div class="search-section-top">
         <h2 class="section-title">Property Search</h2>
-        <button type="button" class="search-toggle-btn" id="search-toggle-btn" hidden>
-          Edit search
-        </button>
+        <div class="search-section-actions">
+          <button type="button" class="search-toggle-btn" id="change-property-btn" hidden>
+            Change property
+          </button>
+          <button type="button" class="search-toggle-btn" id="search-toggle-btn" hidden>
+            Edit search
+          </button>
+        </div>
       </div>
       <p class="subtitle" id="search-subtitle">Search by owner name, account number, or parcel number.</p>
 
@@ -794,11 +820,11 @@
     <section class="benefit-panel" id="benefit-panel" aria-labelledby="benefit-title">
       <h2 class="section-title" id="benefit-title">What you gain vs. what you pay</h2>
       <p class="subtitle" style="margin-bottom: 12px;">
-        Travel savings for your household compared to the levy from properties you select in your search results.
+        Travel savings for your household compared to the levy from your selected property.
       </p>
 
       <p class="benefit-levy-note" id="benefitLevyNote">
-        Search for your property above, then check which results to include (includes senior exemption when applicable).
+        Search for your property above, then choose one result (includes senior exemption when applicable).
       </p>
 
       <div class="benefit-hero" aria-live="polite">
@@ -819,14 +845,7 @@
           <label class="benefit-field">
             <span>Out-of-town medical trips per year</span>
             <input type="range" id="benefitTrips" min="0" max="24" step="1" value="6" />
-            <em><span id="benefitTripsVal">6</span> trips per year</em>
-          </label>
-          <label class="benefit-field">
-            <span>How far you drive now (one way)</span>
-            <select id="benefitDistance">
-              <option value="85">About 85 miles</option>
-              <option value="132">About 132 miles</option>
-            </select>
+            <em><span id="benefitTripsVal">6</span> trips per year (~100 miles one way)</em>
           </label>
           <label class="benefit-field">
             <span>Trips needing a hotel night</span>
@@ -965,6 +984,15 @@
       Senior exemption amounts come from TreasurerWeb tax bills.
     </footer>
   </main>
+
+  <div class="modal-backdrop" id="propertyPickerModal" role="dialog" aria-modal="true" aria-labelledby="propertyPickerTitle" hidden>
+    <div class="modal">
+      <h2 id="propertyPickerTitle">Select your property</h2>
+      <p>Choose one property for the benefit comparison. Your selection is saved when you pick a property.</p>
+      <div class="property-pick-list" id="propertyPickerList"></div>
+      <button type="button" class="modal-close" id="propertyPickerCancel">Cancel</button>
+    </div>
+  </div>
 
   <div class="modal-backdrop" id="recoveryModal" role="dialog" aria-modal="true" aria-labelledby="recoveryModalTitle" hidden>
     <div class="modal">
@@ -1130,10 +1158,6 @@
             ${increaseStats}
           </div>
           ${hasSenior ? `<p class="tax-note">Senior exemption applied (${formatMoney(item.levyImpact.seniorExemption)} credit at ${payload.levy?.millLevy} mills). <a href="${treasurerUrl}" target="_blank" rel="noopener">View TreasurerWeb bill</a></p>` : ""}
-          <label class="result-include">
-            <input type="checkbox" class="result-include-input" value="${i}" />
-            <span>Include in benefit comparison</span>
-          </label>
         `;
         resultsEl.appendChild(card);
       }
@@ -1142,8 +1166,11 @@
 
     function clearBenefitSearch() {
       window.benefitSearchResults = [];
+      window.selectedBenefitIndex = null;
+      resultsEl.hidden = false;
+      closePropertyPickerModal();
       document.getElementById("benefitLevyNote").textContent =
-        "Search for your property above, then check which results to include (includes senior exemption when applicable).";
+        "Search for your property above, then choose one result (includes senior exemption when applicable).";
       renderBenefitPanel();
     }
 
@@ -1181,15 +1208,17 @@
 
   <script>
     const BENEFIT_MILE_RATE = 0.7;
+    const BENEFIT_ONE_WAY_MILES = 100;
     const BENEFIT_MEAL = 24;
     const BENEFIT_HOTEL = 104;
     const BENEFIT_PRESETS = {
-      retired: { trips: 8, distance: 85, hotelShare: 25, lostWages: 0 },
-      family: { trips: 4, distance: 132, hotelShare: 15, lostWages: 160 },
-      senior: { trips: 6, distance: 85, hotelShare: 20, lostWages: 0 },
+      retired: { trips: 8, hotelShare: 25, lostWages: 0 },
+      family: { trips: 4, hotelShare: 15, lostWages: 160 },
+      senior: { trips: 6, hotelShare: 20, lostWages: 0 },
     };
 
     window.benefitSearchResults = [];
+    window.selectedBenefitIndex = null;
     window.lastSearchQuery = "";
 
     function benefitMoney(n) {
@@ -1203,12 +1232,9 @@
       return gas + BENEFIT_MEAL + hotel + lostWages;
     }
 
-    function getSelectedBenefitResults() {
-      const results = window.benefitSearchResults;
-      if (!results.length) return [];
-      return [...document.querySelectorAll("#results .result-include-input:checked")]
-        .map((input) => results[Number(input.value)])
-        .filter(Boolean);
+    function getSelectedBenefitProperty() {
+      if (window.selectedBenefitIndex == null) return null;
+      return window.benefitSearchResults[window.selectedBenefitIndex] ?? null;
     }
 
     function levyFromSearchResult(item) {
@@ -1216,35 +1242,60 @@
       return item.levyImpact.annualIncreaseNet ?? item.levyImpact.annualIncrease ?? null;
     }
 
-    function totalSelectedLevy(items) {
-      let total = 0;
-      let hasAny = false;
-      for (const item of items) {
-        const levy = levyFromSearchResult(item);
-        if (levy != null) {
-          total += levy;
-          hasAny = true;
-        }
-      }
-      return hasAny ? total : null;
+    function closePropertyPickerModal() {
+      const modal = document.getElementById("propertyPickerModal");
+      modal.classList.remove("open");
+      modal.hidden = true;
+    }
+
+    function openPropertyPickerModal() {
+      const results = window.benefitSearchResults;
+      if (results.length <= 1) return;
+
+      const list = document.getElementById("propertyPickerList");
+      list.innerHTML = results
+        .map((item, i) => {
+          const levy = levyFromSearchResult(item);
+          const levyLabel = levy != null ? `${benefitMoney(levy)}/year` : "levy unavailable";
+          const senior = item.levyImpact?.hasSeniorExemption ? " · senior exemption" : "";
+          return `
+            <button type="button" class="property-pick-option" data-index="${i}">
+              <strong>${item.accountNumber}</strong>
+              <span>${item.parcel || "Parcel unavailable"} · ${levyLabel}${senior}</span>
+            </button>
+          `;
+        })
+        .join("");
+
+      const modal = document.getElementById("propertyPickerModal");
+      modal.hidden = false;
+      modal.classList.add("open");
+    }
+
+    function selectBenefitProperty(index) {
+      window.selectedBenefitIndex = index;
+      closePropertyPickerModal();
+      document.getElementById("results").hidden = true;
+      renderBenefitPanel();
     }
 
     function updateSearchSectionCollapse() {
       const section = document.getElementById("search-section");
       const toggleBtn = document.getElementById("search-toggle-btn");
+      const changeBtn = document.getElementById("change-property-btn");
       const summary = document.getElementById("search-collapsed-summary");
-      const selected = getSelectedBenefitResults();
-      const shouldCollapse = selected.length > 0;
+      const selected = getSelectedBenefitProperty();
+      const shouldCollapse = selected != null;
 
       section.classList.toggle("collapsed", shouldCollapse);
       toggleBtn.hidden = !shouldCollapse;
+      changeBtn.hidden = !(shouldCollapse && window.benefitSearchResults.length > 1);
 
       if (shouldCollapse) {
-        const accounts = selected.map((item) => item.accountNumber).join(", ");
         const queryLabel = window.lastSearchQuery ? ` for “${window.lastSearchQuery}”` : "";
         summary.hidden = false;
         summary.innerHTML =
-          `<strong>${selected.length} propert${selected.length === 1 ? "y" : "ies"} selected</strong>${queryLabel}: ${accounts}`;
+          `<strong>Property selected</strong>${queryLabel}: ${selected.accountNumber}`;
       } else {
         summary.hidden = true;
         summary.textContent = "";
@@ -1254,70 +1305,73 @@
     function expandSearchSection() {
       document.getElementById("search-section").classList.remove("collapsed");
       document.getElementById("search-toggle-btn").hidden = true;
+      document.getElementById("change-property-btn").hidden = true;
       document.getElementById("search-collapsed-summary").hidden = true;
+      if (window.benefitSearchResults.length) {
+        document.getElementById("results").hidden = false;
+      }
       document.getElementById("query").focus();
     }
 
     function updateBenefitLevyNote() {
       const note = document.getElementById("benefitLevyNote");
-      const selected = getSelectedBenefitResults();
-      if (!selected.length) {
+      const selected = getSelectedBenefitProperty();
+      if (!selected) {
         if (!window.benefitSearchResults.length) {
           note.textContent =
-            "Search for your property above, then check which results to include (includes senior exemption when applicable).";
+            "Search for your property above, then choose one result (includes senior exemption when applicable).";
         } else {
-          note.textContent =
-            "Check one or more properties in your search results above to include them in your levy total.";
+          note.textContent = "Choose a property from the popup to include your levy in the comparison.";
         }
         return;
       }
 
-      const total = totalSelectedLevy(selected);
-      if (total == null) {
-        note.textContent = "Levy could not be loaded for the selected properties.";
+      const levy = levyFromSearchResult(selected);
+      if (levy == null) {
+        note.textContent = "Levy could not be loaded for the selected property.";
         return;
       }
 
-      if (selected.length === 1) {
-        const item = selected[0];
-        const senior = item.levyImpact?.hasSeniorExemption;
-        note.textContent =
-          `Levy for ${item.accountNumber}: ${benefitMoney(total)}/year from EagleWeb + TreasurerWeb` +
-          (senior ? " (senior exemption included)." : ".");
-        return;
-      }
-
+      const senior = selected.levyImpact?.hasSeniorExemption;
       note.textContent =
-        `${selected.length} properties selected — ${benefitMoney(total)}/year combined levy from EagleWeb + TreasurerWeb.`;
+        `Levy for ${selected.accountNumber}: ${benefitMoney(levy)}/year from EagleWeb + TreasurerWeb` +
+        (senior ? " (senior exemption included)." : ".");
     }
 
     function updateBenefitFromSearch(payload) {
       window.benefitSearchResults = payload.results ?? [];
+      window.selectedBenefitIndex = null;
+      document.getElementById("results").hidden = false;
 
       if (!window.benefitSearchResults.length) {
         clearBenefitSearch();
         return;
       }
 
+      if (window.benefitSearchResults.length === 1) {
+        selectBenefitProperty(0);
+        return;
+      }
+
+      openPropertyPickerModal();
       updateBenefitLevyNote();
       renderBenefitPanel();
     }
 
     function renderBenefitPanel() {
       const trips = Number(document.getElementById("benefitTrips").value);
-      const oneWay = Number(document.getElementById("benefitDistance").value);
       const hotelShare = Number(document.getElementById("benefitHotelShare").value);
       const lostWages = Number(document.getElementById("benefitLostWages").value);
       const years = Number(document.getElementById("benefitYears").value);
-      const selected = getSelectedBenefitResults();
-      const levy = totalSelectedLevy(selected);
+      const selected = getSelectedBenefitProperty();
+      const levy = selected ? levyFromSearchResult(selected) : null;
 
       updateBenefitLevyNote();
 
       document.getElementById("benefitTripsVal").textContent = trips;
       document.getElementById("benefitHotelShareVal").textContent = hotelShare;
 
-      const perTrip = benefitTripCost(oneWay, hotelShare, lostWages);
+      const perTrip = benefitTripCost(BENEFIT_ONE_WAY_MILES, hotelShare, lostWages);
       const annualSave = trips * perTrip;
       const totalSave = annualSave * years;
       const totalLevy = levy != null ? levy * years : null;
@@ -1325,19 +1379,17 @@
 
       document.getElementById("benefitAnnualSave").textContent = `${benefitMoney(annualSave)} / year`;
       document.getElementById("benefitTripDetail").textContent =
-        `About ${benefitMoney(perTrip)} per trip (gas, meal, hotel share, lost pay).`;
+        `About ${benefitMoney(perTrip)} per trip (~100 miles one way; gas, meal, hotel share, lost pay).`;
 
-      if (levy != null && selected.length) {
+      if (levy != null && selected) {
         document.getElementById("benefitAnnualLevy").textContent = `${formatMoney(levy)} / year`;
         document.getElementById("benefitLevyDetail").textContent =
-          selected.length === 1
-            ? `Account ${selected[0].accountNumber} — from your search results.`
-            : `${selected.length} accounts selected — combined levy from your search results.`;
+          `Account ${selected.accountNumber} — from your search results.`;
       } else {
         document.getElementById("benefitAnnualLevy").textContent = "—";
         document.getElementById("benefitLevyDetail").textContent =
           window.benefitSearchResults.length
-            ? "Check properties in your search results above."
+            ? "Choose a property from the popup to include your levy."
             : "Search for a property above.";
       }
 
@@ -1355,7 +1407,7 @@
         hero.style.color = "var(--good)";
         document.getElementById("benefitHeroSub").textContent =
           window.benefitSearchResults.length
-            ? "Check properties in your search results to subtract your levy"
+            ? "Choose a property from the popup to subtract your levy"
             : "Search a property to subtract your levy";
       }
 
@@ -1390,22 +1442,27 @@
         btn.classList.add("active");
         const p = BENEFIT_PRESETS[btn.dataset.preset];
         document.getElementById("benefitTrips").value = p.trips;
-        document.getElementById("benefitDistance").value = String(p.distance);
         document.getElementById("benefitHotelShare").value = p.hotelShare;
         document.getElementById("benefitLostWages").value = String(p.lostWages);
         renderBenefitPanel();
       });
     });
 
-    document.getElementById("results")?.addEventListener("change", (event) => {
-      if (!event.target.matches(".result-include-input")) return;
-      event.target.closest(".result-card")?.classList.toggle("included", event.target.checked);
-      renderBenefitPanel();
+    document.getElementById("propertyPickerList")?.addEventListener("click", (event) => {
+      const button = event.target.closest(".property-pick-option");
+      if (!button) return;
+      selectBenefitProperty(Number(button.dataset.index));
+    });
+
+    document.getElementById("propertyPickerCancel")?.addEventListener("click", closePropertyPickerModal);
+    document.getElementById("propertyPickerModal")?.addEventListener("click", (event) => {
+      if (event.target.id === "propertyPickerModal") closePropertyPickerModal();
     });
 
     document.getElementById("search-toggle-btn")?.addEventListener("click", expandSearchSection);
+    document.getElementById("change-property-btn")?.addEventListener("click", openPropertyPickerModal);
 
-    ["benefitTrips", "benefitHotelShare", "benefitDistance", "benefitLostWages", "benefitYears"].forEach((id) => {
+    ["benefitTrips", "benefitHotelShare", "benefitLostWages", "benefitYears"].forEach((id) => {
       const el = document.getElementById(id);
       el?.addEventListener("input", renderBenefitPanel);
       el?.addEventListener("change", renderBenefitPanel);
