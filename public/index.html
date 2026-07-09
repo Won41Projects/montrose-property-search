@@ -744,6 +744,15 @@
       color: var(--muted);
     }
 
+    .recovery-slider-tip {
+      margin: 14px 0 0;
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--accent) 8%, transparent);
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
     .emergency-notice {
       display: block;
       width: 100%;
@@ -1035,6 +1044,10 @@
         </div>
       </fieldset>
 
+      <p class="recovery-slider-tip" id="recoverySliderTip">
+        Tip: Drag the slider to see how longer travel times lower recovery chances. Try moving it right to compare a slower trip.
+      </p>
+
       <div class="recovery-row">
         <div class="readout-stat highlight" aria-live="polite" aria-atomic="true">
           <span id="percentLabel">Approximate chance of good recovery</span>
@@ -1045,7 +1058,7 @@
         <div class="slider-wrap">
           <label for="minutes">
             Minutes to hospital
-            <time id="timeReadout">60 min</time>
+            <time id="timeReadout">20 min</time>
           </label>
           <input
             type="range"
@@ -1053,11 +1066,11 @@
             min="15"
             max="180"
             step="1"
-            value="60"
+            value="20"
             aria-valuemin="15"
             aria-valuemax="180"
-            aria-valuenow="60"
-            aria-describedby="recoveryNote"
+            aria-valuenow="20"
+            aria-describedby="recoverySliderTip recoveryNote"
           />
         </div>
       </div>
