@@ -126,11 +126,62 @@
       display: none;
     }
 
-    .selected-property-display {
+    .selected-properties-display {
       display: none;
       margin-top: 12px;
+      gap: 10px;
+    }
+
+    .search-results-section.property-selected .selected-properties-display {
+      display: grid;
+    }
+
+    .results-select-instruction {
+      margin: 16px 0 0;
+      padding: 12px 14px;
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--accent) 10%, transparent);
+      border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+      font-size: 0.92rem;
+      color: var(--text);
+    }
+
+    .selection-summary {
+      margin: 0 0 4px;
+      font-size: 0.92rem;
+      color: var(--muted);
+    }
+
+    .selected-property-item {
       border-color: var(--accent);
       background: color-mix(in srgb, var(--accent) 5%, var(--panel));
+    }
+
+    .selected-property-item summary {
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.95rem;
+      padding: 4px 0;
+      list-style: none;
+    }
+
+    .selected-property-item summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .selected-property-item summary::before {
+      content: "▸ ";
+      color: var(--accent);
+    }
+
+    .selected-property-item[open] summary::before {
+      content: "▾ ";
+    }
+
+    .selected-property-body {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
     }
 
     .search-results-section.property-selected .search-section-actions {
@@ -206,8 +257,12 @@
       background: color-mix(in srgb, var(--accent) 5%, var(--panel));
     }
 
-    .search-results-section.property-selected .selected-property-display {
-      display: block;
+    .result-select-btn.is-active {
+      background: var(--good);
+    }
+
+    .result-select-btn.is-active:hover {
+      background: color-mix(in srgb, var(--good) 85%, #000);
     }
 
     .result-card-header {
@@ -860,7 +915,7 @@
         <h2 class="section-title">Property Search</h2>
         <div class="search-section-actions">
           <button type="button" class="search-toggle-btn" id="change-property-btn" hidden>
-            Change property
+            Change selection
           </button>
           <button type="button" class="search-toggle-btn" id="search-toggle-btn" hidden>
             Edit search
@@ -888,20 +943,23 @@
 
         <div id="status" class="status" hidden></div>
         <div id="error" class="error" hidden></div>
+        <p class="results-select-instruction" id="resultsSelectInstruction" hidden>
+          Select one or more properties below to see your personal report — levy estimate, benefits, and recovery.
+        </p>
         <div id="results" class="results"></div>
       </div>
 
-      <article id="selected-property-display" class="result-card selected-property-display"></article>
+      <div id="selected-properties-display" class="selected-properties-display"></div>
     </section>
 
     <section class="benefit-panel" id="benefit-panel" aria-labelledby="benefit-title">
       <h2 class="section-title" id="benefit-title">What you gain vs. what you pay</h2>
       <p class="subtitle" style="margin-bottom: 12px;">
-        Travel savings for your household compared to the levy from your selected property.
+        Travel savings for your household compared to the levy from your selected properties.
       </p>
 
       <p class="benefit-levy-note" id="benefitLevyNote">
-        Search for your property above, then click Select on one result (includes senior exemption when applicable).
+        Search for your property above, then select one or more results (includes senior exemption when applicable).
       </p>
 
       <div class="benefit-hero" aria-live="polite">
@@ -1199,7 +1257,7 @@
     }
 
     function buildPropertyCardHtml(item, levy, options = {}) {
-      const { showSelect = false, index = 0 } = options;
+      const { showSelect = false, index = 0, selected = false } = options;
       const assessed = item.assessment?.nonSchoolAssessedValue;
       const grossAnnual = item.levyImpact?.annualIncreaseGross;
       const netAnnual = item.levyImpact?.annualIncreaseNet ?? item.levyImpact?.annualIncrease;
@@ -1235,7 +1293,7 @@
         `;
 
       const action = showSelect
-        ? `<button type="button" class="result-select-btn" data-index="${index}">Select</button>`
+        ? `<button type="button" class="result-select-btn${selected ? " is-active" : ""}" data-index="${index}">${selected ? "Selected" : "Select"}</button>`
         : `<span class="selected-badge">Selected</span>`;
 
       return `
@@ -1271,23 +1329,29 @@
         const card = document.createElement("article");
         card.className = "result-card";
         card.dataset.resultIndex = String(i);
-        card.innerHTML = buildPropertyCardHtml(item, payload.levy, { showSelect: true, index: i });
+        card.innerHTML = buildPropertyCardHtml(item, payload.levy, {
+          showSelect: true,
+          index: i,
+          selected: false,
+        });
         resultsEl.appendChild(card);
       }
+      document.getElementById("resultsSelectInstruction").hidden = false;
       updateBenefitFromSearch(payload);
     }
 
     function clearBenefitSearch() {
       window.benefitSearchResults = [];
-      window.selectedBenefitIndex = null;
+      window.selectedBenefitIndices = new Set();
       window.lastSearchPayload = null;
       document.getElementById("search-results-section")?.classList.remove("property-selected");
-      const display = document.getElementById("selected-property-display");
+      const display = document.getElementById("selected-properties-display");
       if (display) display.innerHTML = "";
+      document.getElementById("resultsSelectInstruction").hidden = true;
       document.getElementById("search-toggle-btn").hidden = true;
       document.getElementById("change-property-btn").hidden = true;
       document.getElementById("benefitLevyNote").textContent =
-        "Search for your property above, then click Select on one result (includes senior exemption when applicable).";
+        "Search for your property above, then select one or more results (includes senior exemption when applicable).";
       renderBenefitPanel();
     }
 
@@ -1342,7 +1406,7 @@
     };
 
     window.benefitSearchResults = [];
-    window.selectedBenefitIndex = null;
+    window.selectedBenefitIndices = new Set();
     window.lastSearchQuery = "";
     window.lastSearchPayload = null;
 
@@ -1374,9 +1438,24 @@
       }).format(value);
     }
 
-    function getSelectedBenefitProperty() {
-      if (window.selectedBenefitIndex == null) return null;
-      return window.benefitSearchResults[window.selectedBenefitIndex] ?? null;
+    function getSelectedBenefitProperties() {
+      return [...window.selectedBenefitIndices]
+        .sort((a, b) => a - b)
+        .map((index) => window.benefitSearchResults[index])
+        .filter(Boolean);
+    }
+
+    function totalSelectedLevy(items) {
+      let total = 0;
+      let hasAny = false;
+      for (const item of items) {
+        const levy = levyFromSearchResult(item);
+        if (levy != null) {
+          total += levy;
+          hasAny = true;
+        }
+      }
+      return hasAny ? total : null;
     }
 
     function levyFromSearchResult(item) {
@@ -1384,88 +1463,142 @@
       return item.levyImpact.annualIncreaseNet ?? item.levyImpact.annualIncrease ?? null;
     }
 
-    function selectBenefitProperty(index) {
-      const item = window.benefitSearchResults[index];
-      if (!item) return;
+    function renderSelectedPropertiesDisplay() {
+      const container = document.getElementById("selected-properties-display");
+      const indices = [...window.selectedBenefitIndices].sort((a, b) => a - b);
+      if (!indices.length) {
+        container.innerHTML = "";
+        return;
+      }
 
-      window.selectedBenefitIndex = index;
-      const display = document.getElementById("selected-property-display");
-      display.innerHTML = window.buildPropertyCardHtml(
-        item,
-        window.lastSearchPayload?.levy,
-        { showSelect: false },
-      );
+      const levyConfig = window.lastSearchPayload?.levy;
+      const countLabel = indices.length === 1 ? "1 property" : `${indices.length} properties`;
+      let html =
+        `<p class="selection-summary"><strong>${countLabel} selected</strong> for your personal report. Expand a property for full details.</p>`;
 
-      document.getElementById("search-results-section").classList.add("property-selected");
-      document.getElementById("search-toggle-btn").hidden = false;
-      document.getElementById("change-property-btn").hidden = window.benefitSearchResults.length <= 1;
+      for (const i of indices) {
+        const item = window.benefitSearchResults[i];
+        const annual = levyFromSearchResult(item);
+        const levyLabel = annual != null ? `${formatMoney(annual)}/yr` : "levy unavailable";
+        const parcel = item.parcel || "Parcel unavailable";
+        html += `
+          <details class="selected-property-item result-card">
+            <summary>${item.accountNumber} · ${parcel} · ${levyLabel}</summary>
+            <div class="selected-property-body">
+              ${window.buildPropertyCardHtml(item, levyConfig, { showSelect: false })}
+            </div>
+          </details>
+        `;
+      }
+
+      container.innerHTML = html;
+    }
+
+    function syncResultCardButtons() {
+      document.querySelectorAll("#results .result-card").forEach((card) => {
+        const index = Number(card.dataset.resultIndex);
+        const selected = window.selectedBenefitIndices.has(index);
+        card.classList.toggle("is-selected", selected);
+        const btn = card.querySelector(".result-select-btn");
+        if (btn) {
+          btn.textContent = selected ? "Selected" : "Select";
+          btn.classList.toggle("is-active", selected);
+        }
+      });
+    }
+
+    function syncPropertySelectionUI() {
+      const hasSelection = window.selectedBenefitIndices.size > 0;
+      document.getElementById("search-results-section").classList.toggle("property-selected", hasSelection);
+      document.getElementById("resultsSelectInstruction").hidden =
+        hasSelection || !window.benefitSearchResults.length;
+      document.getElementById("search-toggle-btn").hidden = !hasSelection;
+      document.getElementById("change-property-btn").hidden = !hasSelection;
+      syncResultCardButtons();
+      renderSelectedPropertiesDisplay();
       renderBenefitPanel();
     }
 
+    function toggleBenefitProperty(index) {
+      if (!window.benefitSearchResults[index]) return;
+      if (window.selectedBenefitIndices.has(index)) {
+        window.selectedBenefitIndices.delete(index);
+      } else {
+        window.selectedBenefitIndices.add(index);
+      }
+      syncPropertySelectionUI();
+    }
+
     function expandSearchSection() {
-      window.selectedBenefitIndex = null;
+      window.selectedBenefitIndices = new Set();
       document.getElementById("search-results-section").classList.remove("property-selected");
-      document.getElementById("selected-property-display").innerHTML = "";
+      document.getElementById("selected-properties-display").innerHTML = "";
       document.getElementById("search-toggle-btn").hidden = true;
       document.getElementById("change-property-btn").hidden = true;
-      document.querySelectorAll("#results .result-card").forEach((card) => {
-        card.classList.remove("is-selected");
-      });
+      document.getElementById("resultsSelectInstruction").hidden =
+        !window.benefitSearchResults.length;
+      syncResultCardButtons();
       document.getElementById("query").focus();
       renderBenefitPanel();
     }
 
     function expandForPropertyChange() {
       document.getElementById("search-results-section").classList.remove("property-selected");
-      document.getElementById("selected-property-display").innerHTML = "";
-      document.querySelectorAll("#results .result-card").forEach((card) => {
-        card.classList.toggle(
-          "is-selected",
-          Number(card.dataset.resultIndex) === window.selectedBenefitIndex,
-        );
-      });
+      document.getElementById("selected-properties-display").innerHTML = "";
+      document.getElementById("resultsSelectInstruction").hidden = false;
       document.getElementById("search-toggle-btn").hidden = false;
       document.getElementById("change-property-btn").hidden = true;
+      syncResultCardButtons();
     }
 
     function updateBenefitLevyNote() {
       const note = document.getElementById("benefitLevyNote");
-      const selected = getSelectedBenefitProperty();
-      if (!selected) {
+      const selected = getSelectedBenefitProperties();
+      if (!selected.length) {
         if (!window.benefitSearchResults.length) {
           note.textContent =
-            "Search for your property above, then click Select on one result (includes senior exemption when applicable).";
+            "Search for your property above, then select one or more results (includes senior exemption when applicable).";
         } else {
-          note.textContent = "Click Select on one of your search results to include your levy in the comparison.";
+          note.textContent =
+            "Select one or more properties from your search results to build your personal report.";
         }
         return;
       }
 
-      const levy = levyFromSearchResult(selected);
-      if (levy == null) {
-        note.textContent = "Levy could not be loaded for the selected property.";
+      const total = totalSelectedLevy(selected);
+      if (total == null) {
+        note.textContent = "Levy could not be loaded for the selected properties.";
         return;
       }
 
-      const senior = selected.levyImpact?.hasSeniorExemption;
+      if (selected.length === 1) {
+        const item = selected[0];
+        const senior = item.levyImpact?.hasSeniorExemption;
+        note.textContent =
+          `Levy for ${item.accountNumber}: ${benefitMoney(total)}/year from EagleWeb + TreasurerWeb` +
+          (senior ? " (senior exemption included)." : ".");
+        return;
+      }
+
       note.textContent =
-        `Levy for ${selected.accountNumber}: ${benefitMoney(levy)}/year from EagleWeb + TreasurerWeb` +
-        (senior ? " (senior exemption included)." : ".");
+        `${selected.length} properties selected — ${benefitMoney(total)}/year combined levy from EagleWeb + TreasurerWeb.`;
     }
 
     function updateBenefitFromSearch(payload) {
       window.benefitSearchResults = payload.results ?? [];
-      window.selectedBenefitIndex = null;
+      window.selectedBenefitIndices = new Set();
       document.getElementById("search-results-section").classList.remove("property-selected");
-      document.getElementById("selected-property-display").innerHTML = "";
+      document.getElementById("selected-properties-display").innerHTML = "";
       document.getElementById("search-toggle-btn").hidden = true;
       document.getElementById("change-property-btn").hidden = true;
 
       if (!window.benefitSearchResults.length) {
+        document.getElementById("resultsSelectInstruction").hidden = true;
         clearBenefitSearch();
         return;
       }
 
+      document.getElementById("resultsSelectInstruction").hidden = false;
       updateBenefitLevyNote();
       renderBenefitPanel();
     }
@@ -1477,8 +1610,8 @@
       const years = Number(document.getElementById("benefitYears").value);
       const meal = getBenefitMeal();
       const hotelTier = getBenefitHotelTier();
-      const selected = getSelectedBenefitProperty();
-      const levy = selected ? levyFromSearchResult(selected) : null;
+      const selected = getSelectedBenefitProperties();
+      const levy = totalSelectedLevy(selected);
 
       updateBenefitLevyNote();
 
@@ -1510,15 +1643,17 @@
       document.getElementById("benefitTripDetail").textContent =
         `${benefitMoney(perTrip)} per trip × ${trips} trips (see breakdown).`;
 
-      if (levy != null && selected) {
+      if (levy != null && selected.length) {
         document.getElementById("benefitAnnualLevy").textContent = `${formatMoney(levy)} / year`;
         document.getElementById("benefitLevyDetail").textContent =
-          `Account ${selected.accountNumber} — from your search results.`;
+          selected.length === 1
+            ? `Account ${selected[0].accountNumber} — from your search results.`
+            : `${selected.length} accounts selected — combined levy from your search results.`;
       } else {
         document.getElementById("benefitAnnualLevy").textContent = "—";
         document.getElementById("benefitLevyDetail").textContent =
           window.benefitSearchResults.length
-            ? "Click Select on one of your search results."
+            ? "Select one or more properties from your search results."
             : "Search for a property above.";
       }
 
@@ -1536,7 +1671,7 @@
         hero.style.color = "var(--good)";
         document.getElementById("benefitHeroSub").textContent =
           window.benefitSearchResults.length
-            ? "Click Select on a search result to subtract your levy"
+            ? "Select one or more properties to subtract your levy"
             : "Search a property to subtract your levy";
       }
 
@@ -1566,7 +1701,7 @@
     document.getElementById("results")?.addEventListener("click", (event) => {
       const button = event.target.closest(".result-select-btn");
       if (!button) return;
-      selectBenefitProperty(Number(button.dataset.index));
+      toggleBenefitProperty(Number(button.dataset.index));
     });
 
     document.querySelectorAll("#benefitPresets button").forEach((btn) => {
