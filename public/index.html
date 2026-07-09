@@ -146,6 +146,45 @@
       color: var(--text);
     }
 
+    .selection-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 16px;
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--panel);
+    }
+
+    .selection-bar p {
+      margin: 0;
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    .build-report-btn {
+      padding: 10px 18px;
+      border: none;
+      border-radius: 8px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .build-report-btn:hover:not(:disabled) {
+      background: var(--accent-hover);
+    }
+
+    .build-report-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
     .selection-summary {
       margin: 0 0 4px;
       font-size: 0.92rem;
@@ -944,9 +983,16 @@
         <div id="status" class="status" hidden></div>
         <div id="error" class="error" hidden></div>
         <p class="results-select-instruction" id="resultsSelectInstruction" hidden>
-          Select one or more properties below to see your personal report — levy estimate, benefits, and recovery.
+          Select one or more properties below, then click Build my report for your personal levy, benefits, and recovery estimates.
         </p>
         <div id="results" class="results"></div>
+
+        <div class="selection-bar" id="selectionBar" hidden>
+          <p id="selectionCount">0 properties selected</p>
+          <button type="button" class="build-report-btn" id="buildReportBtn" disabled>
+            Build my report
+          </button>
+        </div>
       </div>
 
       <div id="selected-properties-display" class="selected-properties-display"></div>
@@ -1336,17 +1382,18 @@
         });
         resultsEl.appendChild(card);
       }
-      document.getElementById("resultsSelectInstruction").hidden = false;
       updateBenefitFromSearch(payload);
     }
 
     function clearBenefitSearch() {
       window.benefitSearchResults = [];
       window.selectedBenefitIndices = new Set();
+      window.reportConfirmed = false;
       window.lastSearchPayload = null;
       document.getElementById("search-results-section")?.classList.remove("property-selected");
       const display = document.getElementById("selected-properties-display");
       if (display) display.innerHTML = "";
+      document.getElementById("selectionBar").hidden = true;
       document.getElementById("resultsSelectInstruction").hidden = true;
       document.getElementById("search-toggle-btn").hidden = true;
       document.getElementById("change-property-btn").hidden = true;
@@ -1407,6 +1454,7 @@
 
     window.benefitSearchResults = [];
     window.selectedBenefitIndices = new Set();
+    window.reportConfirmed = false;
     window.lastSearchQuery = "";
     window.lastSearchPayload = null;
 
@@ -1508,19 +1556,40 @@
     }
 
     function syncPropertySelectionUI() {
-      const hasSelection = window.selectedBenefitIndices.size > 0;
-      document.getElementById("search-results-section").classList.toggle("property-selected", hasSelection);
+      const count = window.selectedBenefitIndices.size;
+      const inReportMode = window.reportConfirmed;
+      const hasResults = window.benefitSearchResults.length > 0;
+
+      document.getElementById("search-results-section").classList.toggle("property-selected", inReportMode);
+      document.getElementById("selectionBar").hidden = inReportMode || !hasResults;
+      document.getElementById("selectionCount").textContent =
+        count === 1 ? "1 property selected" : `${count} properties selected`;
+      document.getElementById("buildReportBtn").disabled = count === 0;
       document.getElementById("resultsSelectInstruction").hidden =
-        hasSelection || !window.benefitSearchResults.length;
-      document.getElementById("search-toggle-btn").hidden = !hasSelection;
-      document.getElementById("change-property-btn").hidden = !hasSelection;
+        inReportMode || !hasResults;
+      document.getElementById("search-toggle-btn").hidden = !inReportMode;
+      document.getElementById("change-property-btn").hidden = !inReportMode;
+
       syncResultCardButtons();
-      renderSelectedPropertiesDisplay();
+
+      if (inReportMode) {
+        renderSelectedPropertiesDisplay();
+      } else {
+        document.getElementById("selected-properties-display").innerHTML = "";
+      }
+
       renderBenefitPanel();
     }
 
+    function confirmPropertyReport() {
+      if (window.selectedBenefitIndices.size === 0) return;
+      window.reportConfirmed = true;
+      syncPropertySelectionUI();
+      document.getElementById("benefit-panel")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
     function toggleBenefitProperty(index) {
-      if (!window.benefitSearchResults[index]) return;
+      if (!window.benefitSearchResults[index] || window.reportConfirmed) return;
       if (window.selectedBenefitIndices.has(index)) {
         window.selectedBenefitIndices.delete(index);
       } else {
@@ -1531,24 +1600,30 @@
 
     function expandSearchSection() {
       window.selectedBenefitIndices = new Set();
+      window.reportConfirmed = false;
       document.getElementById("search-results-section").classList.remove("property-selected");
       document.getElementById("selected-properties-display").innerHTML = "";
       document.getElementById("search-toggle-btn").hidden = true;
       document.getElementById("change-property-btn").hidden = true;
       document.getElementById("resultsSelectInstruction").hidden =
         !window.benefitSearchResults.length;
+      document.getElementById("selectionBar").hidden = !window.benefitSearchResults.length;
       syncResultCardButtons();
       document.getElementById("query").focus();
       renderBenefitPanel();
     }
 
     function expandForPropertyChange() {
+      window.reportConfirmed = false;
       document.getElementById("search-results-section").classList.remove("property-selected");
       document.getElementById("selected-properties-display").innerHTML = "";
-      document.getElementById("resultsSelectInstruction").hidden = false;
-      document.getElementById("search-toggle-btn").hidden = false;
+      document.getElementById("resultsSelectInstruction").hidden =
+        !window.benefitSearchResults.length;
+      document.getElementById("selectionBar").hidden = !window.benefitSearchResults.length;
+      document.getElementById("search-toggle-btn").hidden = true;
       document.getElementById("change-property-btn").hidden = true;
       syncResultCardButtons();
+      renderBenefitPanel();
     }
 
     function updateBenefitLevyNote() {
@@ -1558,10 +1633,21 @@
         if (!window.benefitSearchResults.length) {
           note.textContent =
             "Search for your property above, then select one or more results (includes senior exemption when applicable).";
+        } else if (!window.reportConfirmed) {
+          note.textContent =
+            "Select one or more properties, then click Build my report.";
         } else {
           note.textContent =
             "Select one or more properties from your search results to build your personal report.";
         }
+        return;
+      }
+
+      if (!window.reportConfirmed) {
+        note.textContent =
+          selected.length === 1
+            ? "1 property selected — click Build my report to continue."
+            : `${selected.length} properties selected — click Build my report to continue.`;
         return;
       }
 
@@ -1587,6 +1673,7 @@
     function updateBenefitFromSearch(payload) {
       window.benefitSearchResults = payload.results ?? [];
       window.selectedBenefitIndices = new Set();
+      window.reportConfirmed = false;
       document.getElementById("search-results-section").classList.remove("property-selected");
       document.getElementById("selected-properties-display").innerHTML = "";
       document.getElementById("search-toggle-btn").hidden = true;
@@ -1594,13 +1681,14 @@
 
       if (!window.benefitSearchResults.length) {
         document.getElementById("resultsSelectInstruction").hidden = true;
+        document.getElementById("selectionBar").hidden = true;
         clearBenefitSearch();
         return;
       }
 
       document.getElementById("resultsSelectInstruction").hidden = false;
-      updateBenefitLevyNote();
-      renderBenefitPanel();
+      document.getElementById("selectionBar").hidden = false;
+      syncPropertySelectionUI();
     }
 
     function renderBenefitPanel() {
@@ -1610,7 +1698,8 @@
       const years = Number(document.getElementById("benefitYears").value);
       const meal = getBenefitMeal();
       const hotelTier = getBenefitHotelTier();
-      const selected = getSelectedBenefitProperties();
+      const pending = getSelectedBenefitProperties();
+      const selected = window.reportConfirmed ? pending : [];
       const levy = totalSelectedLevy(selected);
 
       updateBenefitLevyNote();
@@ -1652,9 +1741,11 @@
       } else {
         document.getElementById("benefitAnnualLevy").textContent = "—";
         document.getElementById("benefitLevyDetail").textContent =
-          window.benefitSearchResults.length
-            ? "Select one or more properties from your search results."
-            : "Search for a property above.";
+          !window.reportConfirmed && pending.length
+            ? "Click Build my report after selecting your properties."
+            : window.benefitSearchResults.length
+              ? "Select one or more properties, then click Build my report."
+              : "Search for a property above.";
       }
 
       const hero = document.getElementById("benefitHeroValue");
@@ -1670,9 +1761,11 @@
         hero.textContent = benefitMoney(totalSave);
         hero.style.color = "var(--good)";
         document.getElementById("benefitHeroSub").textContent =
-          window.benefitSearchResults.length
-            ? "Select one or more properties to subtract your levy"
-            : "Search a property to subtract your levy";
+          !window.reportConfirmed && pending.length
+            ? "Click Build my report to include your levy"
+            : window.benefitSearchResults.length
+              ? "Select properties and click Build my report"
+              : "Search a property to subtract your levy";
       }
 
       document.getElementById("benefitBarSaveTitle").textContent = `${years}-year savings`;
@@ -1697,6 +1790,8 @@
       document.getElementById("benefitTakeaways").innerHTML =
         takeaways.map((t) => `<li>${t}</li>`).join("");
     }
+
+    document.getElementById("buildReportBtn")?.addEventListener("click", confirmPropertyReport);
 
     document.getElementById("results")?.addEventListener("click", (event) => {
       const button = event.target.closest(".result-select-btn");
