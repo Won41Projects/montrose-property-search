@@ -5,7 +5,7 @@ A small local applet for searching Montrose County EagleWeb with one input box.
 ## Run
 
 ```bash
-cd ~/.cursor/montrose-property-search
+cd ~/Projects/montrose-property-search
 node server.mjs
 ```
 
