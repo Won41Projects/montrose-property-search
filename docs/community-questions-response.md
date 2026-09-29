@@ -137,16 +137,23 @@ answer rather than a dismissal:
 Great question — and we'd encourage everyone to look, because the record is
 reassuring:
 
-- Colorado has over 30 operating CAHs. Several communities our size have
-  built **new replacement facilities** in recent years — Rangely, Meeker
-  (Pioneers Medical Center), Holyoke (Melissa Memorial), Kremmling (Middle
-  Park Health) — and continue operating. Their Form 990s are public;
-  we welcome that analysis and will help anyone pull them.
+- Colorado has over 30 operating CAHs, and communities our size have built
+  and sustained new facilities: **Kremmling (Middle Park Health) opened its
+  new hospital in 2021**; **Meeker (Pioneers Medical Center) opened a
+  90,000-square-foot replacement CAH in 2015 for $47 million** — including a
+  30-bed long-term care unit, in a town of similar size to ours; **Holyoke
+  (Melissa Memorial)** built in 2008 and expanded in 2016. All continue
+  operating today. Their Form 990s are public; we welcome that analysis and
+  will help anyone pull them.
+- Meeker is also the honest cost benchmark: $47M for 90,000 sq ft in 2015
+  is consistent, after a decade of healthcare construction inflation, with
+  our plan's preliminary $82.2M for 65,000 sq ft.
 - And there is now a designed **fallback**: since 2023, federal law offers the
   Rural Emergency Hospital designation — 24/7 emergency plus outpatient
-  services with a federal facility payment (~$3.4M/year) — created
-  specifically so facilities like ours have a sustainable model even if full
-  CAH volumes disappoint. A district has options; a clinic has none of them.
+  services with a federal facility payment of **$295,051.54 per month in 2026
+  (~$3.5M/year, per CMS)**, indexed upward annually — created specifically so
+  facilities like ours have a sustainable model even if full CAH volumes
+  disappoint. A district has options; a clinic has none of them.
 
 ## On the suggested alternatives
 
