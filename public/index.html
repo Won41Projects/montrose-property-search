@@ -1345,6 +1345,7 @@
 
       <h3>Sources</h3>
       <ul>
+        <li>West End Health Service District filed service plan — Service Area population of 2,259 (2023 estimate, from the American Community Survey, 2020 Census, and zip-code data).</li>
         <li>CMS National Health Expenditure data, 2024 — $15,474 total health spending per person, about $13,200 of it personal healthcare.</li>
         <li>CDC/NCHS — 47 emergency department visits per 100 people per year (higher in rural areas).</li>
         <li>AHRQ HCUP — emergency visit cost data.</li>
@@ -2107,9 +2108,10 @@
     // Community healthcare dollar outflow estimate.
     // OUTFLOW_POPULATION is the one number to update if the district
     // resident count changes; every figure below scales from it.
-    // 1,600 = district residents only (conservative — excludes patients
-    // the facility would draw from the surrounding region).
-    const OUTFLOW_POPULATION = 1600;
+    // 2,259 = the Service Area population (2023 estimate) stated in the
+    // filed West End Health Service District service plan. Excludes
+    // patients the facility would draw from outside the district.
+    const OUTFLOW_POPULATION = 2259;
 
     // Per-resident annual spending ($) on care a local facility would keep,
     // derived from 2024 CMS NHE data and CDC/AHRQ utilization rates.
@@ -2146,8 +2148,8 @@
         new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(daily);
       document.getElementById("outflowAnnualValue").textContent =
         `About ${outflowMillions(annualMid)} a year (estimated ${outflowRange(annualLow, annualHigh)}), ` +
-        `based on ${OUTFLOW_POPULATION.toLocaleString("en-US")} district residents — not counting ` +
-        `patients drawn from the surrounding region.`;
+        `based on the ${OUTFLOW_POPULATION.toLocaleString("en-US")} district residents in the filed ` +
+        `service plan — not counting patients drawn from outside the district.`;
 
       document.getElementById("outflowModalBreakdown").innerHTML =
         OUTFLOW_CATEGORIES.map(
