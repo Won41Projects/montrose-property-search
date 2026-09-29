@@ -689,6 +689,54 @@
       color: var(--muted);
     }
 
+    .outflow-panel {
+      margin-bottom: 28px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px;
+    }
+
+    .outflow-hero {
+      text-align: center;
+      padding: 20px 16px;
+      border-radius: 10px;
+      border: 2px solid var(--warn);
+      background: color-mix(in srgb, var(--warn) 10%, transparent);
+    }
+
+    .outflow-hero-value {
+      margin: 0;
+      font-size: clamp(2.1rem, 8vw, 3rem);
+      font-weight: 800;
+      line-height: 1.05;
+      color: var(--warn);
+    }
+
+    .outflow-hero-label {
+      margin: 6px 0 0;
+      font-size: 1.05rem;
+      font-weight: 650;
+    }
+
+    .outflow-hero-sub {
+      margin: 8px 0 0;
+      font-size: 0.92rem;
+      color: var(--muted);
+    }
+
+    .outflow-note {
+      margin: 12px 0 0;
+      font-size: 0.92rem;
+      color: var(--text);
+    }
+
+    .outflow-disclaimer {
+      margin: 8px 0 0;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
     .title-row {
       display: flex;
       align-items: center;
@@ -948,6 +996,29 @@
       <h1 id="page-title">Proposed West End Health Service District</h1>
       <p class="levy-detail" id="levy-detail">Loading levy information…</p>
     </header>
+
+    <section class="outflow-panel" aria-labelledby="outflow-title">
+      <div class="title-row">
+        <h2 class="section-title" id="outflow-title">Our healthcare dollars are leaving the West End</h2>
+        <button type="button" class="info-btn" id="outflowInfoBtn" aria-label="How this is estimated" title="How this is estimated">i</button>
+      </div>
+      <div class="outflow-hero">
+        <p class="outflow-hero-value" id="outflowDailyValue">—</p>
+        <p class="outflow-hero-label">leaves the West End every day for healthcare</p>
+        <p class="outflow-hero-sub" id="outflowAnnualValue">—</p>
+      </div>
+      <p class="outflow-note">
+        You don't see it leave, because Medicare and insurance pay it straight to out-of-town
+        hospitals, pharmacies, labs, and imaging centers. But those dollars belong to the people
+        who live here — and a local critical care unit keeps them here, along with
+        <strong>101 local jobs and about $8 million a year in wages and benefits</strong>.
+      </p>
+      <p class="outflow-disclaimer">
+        Counts only everyday care a local facility would provide — ER and urgent care, check-ups,
+        imaging, labs, pharmacy, and basic hospital stays. Excludes surgeries and specialty care
+        that would still be referred out. Tap the ⓘ for the breakdown and sources.
+      </p>
+    </section>
 
     <section class="search-results-section" id="search-results-section">
       <div class="search-section-top">
@@ -1240,6 +1311,52 @@
       </ul>
 
       <button type="button" class="modal-close" id="recoveryModalClose">Close</button>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="outflowModal" role="dialog" aria-modal="true" aria-labelledby="outflowModalTitle" hidden>
+    <div class="modal">
+      <h2 id="outflowModalTitle">Where the money goes — and how we estimated it</h2>
+      <p id="outflowModalIntro">
+        Without a local hospital, virtually every healthcare dollar attached to our residents is
+        paid to providers in other towns. This estimate counts only the everyday care a local
+        critical care unit would keep here.
+      </p>
+
+      <h3>Estimated annual outflow</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Care that leaves town</th>
+            <th>Per year</th>
+          </tr>
+        </thead>
+        <tbody id="outflowModalBreakdown"></tbody>
+      </table>
+      <p id="outflowModalScale"></p>
+
+      <h3>Why it matters</h3>
+      <ul>
+        <li>Capturing this care locally supports about 101 jobs and $8 million a year in wages and benefits.</li>
+        <li>Communities that lose (or lack) their only hospital see roughly a 4% permanent drop in per-capita income and a 1.6-point rise in unemployment (Holmes et al., <em>Health Services Research</em>).</li>
+        <li>Every out-of-town trip also takes gas, meal, and shopping dollars with it — on top of the medical spending.</li>
+      </ul>
+
+      <h3>Sources</h3>
+      <ul>
+        <li>CMS National Health Expenditure data, 2024 — $15,474 total health spending per person, about $13,200 of it personal healthcare.</li>
+        <li>CDC/NCHS — 47 emergency department visits per 100 people per year (higher in rural areas).</li>
+        <li>AHRQ HCUP — emergency visit cost data.</li>
+        <li>Eilrich et al., 2015 — jobs and labor income tied to rural hospitals.</li>
+      </ul>
+
+      <h3>Limits</h3>
+      <ul>
+        <li>Estimates are approximate and scale with the number of residents served.</li>
+        <li>Excludes surgeries, specialty care, and advanced procedures that would still be referred to larger hospitals.</li>
+      </ul>
+
+      <button type="button" class="modal-close" id="outflowModalClose">Close</button>
     </div>
   </div>
 
@@ -1983,6 +2100,92 @@
     });
 
     updateRecoveryWidget();
+  </script>
+
+  <script>
+    // Community healthcare dollar outflow estimate.
+    // OUTFLOW_POPULATION is the one number to update if the district
+    // resident count changes; every figure below scales from it.
+    // 1,600 = district residents only (conservative — excludes patients
+    // the facility would draw from the surrounding region).
+    const OUTFLOW_POPULATION = 1600;
+
+    // Per-resident annual spending ($) on care a local facility would keep,
+    // derived from 2024 CMS NHE data and CDC/AHRQ utilization rates.
+    const OUTFLOW_CATEGORIES = [
+      { label: "Pharmacy and prescriptions", low: 1200, high: 1400 },
+      { label: "Emergency and urgent care", low: 620, high: 800 },
+      { label: "Primary care and check-ups", low: 520, high: 680 },
+      { label: "Imaging (X-ray, CT, ultrasound, mammography)", low: 200, high: 280 },
+      { label: "Lab work", low: 200, high: 280 },
+      { label: "Basic hospital stays and observation", low: 280, high: 360 },
+      { label: "Therapy and other outpatient care", low: 120, high: 240 },
+    ];
+
+    function outflowMillions(dollars) {
+      return `$${(dollars / 1_000_000).toFixed(1).replace(/\.0$/, "")} million`;
+    }
+
+    function outflowRange(lowDollars, highDollars) {
+      const fmt = (d) => (d / 1_000_000).toFixed(1).replace(/\.0$/, "");
+      return `$${fmt(lowDollars)}–${fmt(highDollars)} million`;
+    }
+
+    function renderOutflowPanel() {
+      const lowPerCapita = OUTFLOW_CATEGORIES.reduce((s, c) => s + c.low, 0);
+      const highPerCapita = OUTFLOW_CATEGORIES.reduce((s, c) => s + c.high, 0);
+      const midPerCapita = (lowPerCapita + highPerCapita) / 2;
+
+      const annualMid = OUTFLOW_POPULATION * midPerCapita;
+      const annualLow = OUTFLOW_POPULATION * lowPerCapita;
+      const annualHigh = OUTFLOW_POPULATION * highPerCapita;
+      const daily = Math.round(annualMid / 365 / 1000) * 1000;
+
+      document.getElementById("outflowDailyValue").textContent =
+        new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(daily);
+      document.getElementById("outflowAnnualValue").textContent =
+        `About ${outflowMillions(annualMid)} a year (estimated ${outflowRange(annualLow, annualHigh)}), ` +
+        `based on ${OUTFLOW_POPULATION.toLocaleString("en-US")} district residents — not counting ` +
+        `patients drawn from the surrounding region.`;
+
+      document.getElementById("outflowModalBreakdown").innerHTML =
+        OUTFLOW_CATEGORIES.map(
+          (c) => `<tr><td>${c.label}</td><td>${outflowRange(c.low * OUTFLOW_POPULATION, c.high * OUTFLOW_POPULATION)}</td></tr>`
+        ).join("") +
+        `<tr><td><strong>Total</strong></td><td><strong>${outflowRange(annualLow, annualHigh)}</strong></td></tr>`;
+
+      const perResident = (Math.round(midPerCapita / 50) * 50).toLocaleString("en-US");
+      document.getElementById("outflowModalScale").textContent =
+        `Figures shown for ${OUTFLOW_POPULATION.toLocaleString("en-US")} district residents ` +
+        `(about $${perResident} per resident per year); totals scale proportionally, ` +
+        `so patients drawn from outside the district are pure upside.`;
+    }
+
+    const outflowModal = document.getElementById("outflowModal");
+    let outflowModalLastFocus = null;
+
+    document.getElementById("outflowInfoBtn").addEventListener("click", () => {
+      outflowModalLastFocus = document.activeElement;
+      outflowModal.hidden = false;
+      outflowModal.classList.add("open");
+      document.getElementById("outflowModalClose").focus();
+    });
+
+    function closeOutflowModal() {
+      outflowModal.classList.remove("open");
+      outflowModal.hidden = true;
+      outflowModalLastFocus?.focus();
+    }
+
+    document.getElementById("outflowModalClose").addEventListener("click", closeOutflowModal);
+    outflowModal.addEventListener("click", (e) => {
+      if (e.target === outflowModal) closeOutflowModal();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && outflowModal.classList.contains("open")) closeOutflowModal();
+    });
+
+    renderOutflowPanel();
   </script>
 </body>
 </html>
