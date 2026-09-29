@@ -18,6 +18,7 @@
       --error-text: #8a1f11;
       --good: #2f6b45;
       --warn: #b45309;
+      --loss: #9e2a17;
       --emblem-sky: #f7f3ea;
     }
 
@@ -34,6 +35,7 @@
         --error-text: #f2b8b0;
         --good: #74c393;
         --warn: #fbbf24;
+        --loss: #ef9a8c;
         --emblem-sky: #19242f;
       }
     }
@@ -755,28 +757,74 @@
       text-align: center;
       padding: 20px 16px;
       border-radius: 10px;
-      border: 2px solid var(--warn);
-      background: color-mix(in srgb, var(--warn) 10%, transparent);
-    }
-
-    .outflow-hero-value {
-      margin: 0;
-      font-size: clamp(2.1rem, 8vw, 3rem);
-      font-weight: 800;
-      line-height: 1.05;
-      color: var(--warn);
+      border: 2px solid var(--loss);
+      background: color-mix(in srgb, var(--loss) 7%, transparent);
     }
 
     .outflow-hero-label {
-      margin: 6px 0 0;
+      margin: 0;
       font-size: 1.05rem;
-      font-weight: 650;
+      font-weight: 700;
+    }
+
+    .outflow-counters {
+      display: grid;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    @media (min-width: 620px) {
+      .outflow-counters { grid-template-columns: 1fr 1fr; }
+    }
+
+    .outflow-counter {
+      padding: 10px 12px;
+      border-radius: 8px;
+    }
+
+    .outflow-counter span {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--loss);
+      margin-bottom: 2px;
+    }
+
+    .outflow-counter strong {
+      display: block;
+      font-size: clamp(1.7rem, 6.5vw, 2.5rem);
+      font-weight: 800;
+      line-height: 1.05;
+      color: var(--loss);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .outflow-counting {
+      margin: 8px 0 0;
+      font-size: 0.98rem;
+      font-weight: 700;
+      color: var(--loss);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
     }
 
     .outflow-hero-sub {
       margin: 8px 0 0;
       font-size: 0.92rem;
       color: var(--muted);
+    }
+
+    .outflow-keep {
+      margin: 12px 0 0;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 2px solid var(--good);
+      background: color-mix(in srgb, var(--good) 9%, transparent);
+      font-size: 0.98rem;
+      font-weight: 700;
+      color: var(--good);
     }
 
     .outflow-note {
@@ -1121,9 +1169,21 @@
         <button type="button" class="info-btn" id="outflowInfoBtn" aria-label="How this is estimated" title="How this is estimated">i</button>
       </div>
       <div class="outflow-hero">
-        <p class="outflow-hero-value" id="outflowDailyValue">—</p>
-        <p class="outflow-hero-label">leaves the West End every day for healthcare</p>
+        <p class="outflow-hero-label">Healthcare money the West End has already lost…</p>
+        <div class="outflow-counters">
+          <div class="outflow-counter">
+            <span>…today</span>
+            <strong id="outflowTodayValue" aria-live="off">—</strong>
+          </div>
+          <div class="outflow-counter">
+            <span id="outflowYearLabel">…this year</span>
+            <strong id="outflowYearValue" aria-live="off">—</strong>
+          </div>
+        </div>
+        <p class="outflow-counting">…and counting — about <span id="outflowDailyValue">—</span> is lost every single day</p>
+        <p class="outflow-hero-sub"><span id="outflowDailySplit">—</span>.</p>
         <p class="outflow-hero-sub" id="outflowAnnualValue">—</p>
+        <p class="outflow-keep">A local hospital keeps that money — and 70–80 local jobs — here at home.</p>
       </div>
       <p class="outflow-note">
         You don't see it leave, because Medicare and insurance pay it straight to out-of-town
@@ -1133,9 +1193,10 @@
         activity for every $1 it spends.
       </p>
       <p class="outflow-disclaimer">
-        Counts only everyday care a local facility would provide — ER and urgent care, check-ups,
-        imaging, labs, pharmacy, and basic hospital stays. Excludes surgeries and specialty care
-        that would still be referred out. Tap the ⓘ for the breakdown and sources.
+        Counts everyday care a local facility would provide — ER and urgent care, check-ups,
+        imaging, labs, pharmacy, and basic hospital stays — plus what families spend out of
+        pocket traveling to reach it. Excludes surgeries and specialty care that would still be
+        referred out. Tap the ⓘ for the breakdown and sources.
       </p>
     </section>
 
@@ -1477,7 +1538,7 @@
       <ul>
         <li>The district's filed materials project 70–80 local hospital jobs, and healthcare generates about $2.50 in local economic activity for every $1.00 in operating expenses (University of Wyoming study).</li>
         <li>Communities that lose (or lack) their only hospital see roughly a 4% permanent drop in per-capita income and a 1.6-point rise in unemployment (Holmes et al., <em>Health Services Research</em>).</li>
-        <li>Every out-of-town trip also takes gas, meal, and shopping dollars with it — on top of the medical spending.</li>
+        <li>Beyond the travel costs counted here, out-of-town trips also take shopping and errand dollars with them.</li>
       </ul>
 
       <h3>Sources</h3>
@@ -1487,6 +1548,7 @@
         <li>CDC/NCHS — 47 emergency department visits per 100 people per year (higher in rural areas).</li>
         <li>AHRQ HCUP — emergency visit cost data.</li>
         <li>Eilrich et al., 2015 — jobs and labor income tied to rural hospitals.</li>
+        <li>Family travel costs — about 2.5–3.5 out-of-town medical trips per resident per year, 100 miles each way at the IRS $0.70/mile rate, plus meals and occasional overnight stays (the same travel model used in the savings calculator below).</li>
       </ul>
 
       <h3>Limits</h3>
@@ -2262,6 +2324,16 @@
       { label: "Therapy and other outpatient care", low: 120, high: 240 },
     ];
 
+    // Out-of-pocket family travel to reach that care ($/resident/year):
+    // ~2.5-3.5 out-of-town trips per resident per year, 100 miles each way
+    // at the IRS $0.70/mile rate, plus meals and occasional overnight stays
+    // (same assumptions as the savings calculator's travel model).
+    const OUTFLOW_TRAVEL = {
+      label: "Family travel to out-of-town care (fuel, meals, lodging)",
+      low: 410,
+      high: 650,
+    };
+
     function outflowMillions(dollars) {
       return `$${(dollars / 1_000_000).toFixed(1).replace(/\.0$/, "")} million`;
     }
@@ -2272,33 +2344,74 @@
     }
 
     function renderOutflowPanel() {
-      const lowPerCapita = OUTFLOW_CATEGORIES.reduce((s, c) => s + c.low, 0);
-      const highPerCapita = OUTFLOW_CATEGORIES.reduce((s, c) => s + c.high, 0);
+      const medLowPC = OUTFLOW_CATEGORIES.reduce((s, c) => s + c.low, 0);
+      const medHighPC = OUTFLOW_CATEGORIES.reduce((s, c) => s + c.high, 0);
+      const lowPerCapita = medLowPC + OUTFLOW_TRAVEL.low;
+      const highPerCapita = medHighPC + OUTFLOW_TRAVEL.high;
       const midPerCapita = (lowPerCapita + highPerCapita) / 2;
 
       const annualMid = OUTFLOW_POPULATION * midPerCapita;
       const annualLow = OUTFLOW_POPULATION * lowPerCapita;
       const annualHigh = OUTFLOW_POPULATION * highPerCapita;
-      const daily = Math.round(annualMid / 365 / 1000) * 1000;
+      const medDailyMid = (OUTFLOW_POPULATION * (medLowPC + medHighPC)) / 2 / 365;
+      const travelDailyMid = (OUTFLOW_POPULATION * (OUTFLOW_TRAVEL.low + OUTFLOW_TRAVEL.high)) / 2 / 365;
+      const roundK = (d) => Math.round(d / 1000) * 1000;
+      const money0 = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 
-      document.getElementById("outflowDailyValue").textContent =
-        new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(daily);
+      document.getElementById("outflowDailyValue").textContent = money0.format(roundK(annualMid / 365));
+      document.getElementById("outflowDailySplit").textContent =
+        `${money0.format(roundK(medDailyMid))} in healthcare spending plus about ` +
+        `${money0.format(roundK(travelDailyMid))} that families spend traveling to reach it`;
+
+      startOutflowCounters(annualMid / 365);
       document.getElementById("outflowAnnualValue").textContent =
-        `About ${outflowMillions(annualMid)} a year (estimated ${outflowRange(annualLow, annualHigh)}), ` +
-        `based on the ${OUTFLOW_POPULATION.toLocaleString("en-US")} district residents in the filed ` +
-        `service plan — not counting patients drawn from outside the district.`;
+        `About ${outflowMillions(annualMid)} a year (estimated ${outflowRange(annualLow, annualHigh)}): ` +
+        `${outflowRange(OUTFLOW_POPULATION * medLowPC, OUTFLOW_POPULATION * medHighPC)} in healthcare spending plus ` +
+        `${outflowRange(OUTFLOW_POPULATION * OUTFLOW_TRAVEL.low, OUTFLOW_POPULATION * OUTFLOW_TRAVEL.high)} in family travel costs, ` +
+        `based on the ${OUTFLOW_POPULATION.toLocaleString("en-US")} district residents in the filed service plan.`;
 
       document.getElementById("outflowModalBreakdown").innerHTML =
         OUTFLOW_CATEGORIES.map(
           (c) => `<tr><td>${c.label}</td><td>${outflowRange(c.low * OUTFLOW_POPULATION, c.high * OUTFLOW_POPULATION)}</td></tr>`
         ).join("") +
+        `<tr><td>${OUTFLOW_TRAVEL.label}</td><td>${outflowRange(OUTFLOW_TRAVEL.low * OUTFLOW_POPULATION, OUTFLOW_TRAVEL.high * OUTFLOW_POPULATION)}</td></tr>` +
         `<tr><td><strong>Total</strong></td><td><strong>${outflowRange(annualLow, annualHigh)}</strong></td></tr>`;
 
       const perResident = (Math.round(midPerCapita / 50) * 50).toLocaleString("en-US");
       document.getElementById("outflowModalScale").textContent =
         `Figures shown for ${OUTFLOW_POPULATION.toLocaleString("en-US")} district residents ` +
-        `(about $${perResident} per resident per year); totals scale proportionally, ` +
+        `(about $${perResident} per resident per year including travel); totals scale proportionally, ` +
         `so patients drawn from outside the district are pure upside.`;
+    }
+
+    let outflowCounterTimer = null;
+
+    function startOutflowCounters(perDay) {
+      const todayEl = document.getElementById("outflowTodayValue");
+      const yearEl = document.getElementById("outflowYearValue");
+      const yearLabelEl = document.getElementById("outflowYearLabel");
+      const cents = new Intl.NumberFormat("en-US", {
+        style: "currency", currency: "USD", minimumFractionDigits: 2, maximumFractionDigits: 2,
+      });
+      const whole = new Intl.NumberFormat("en-US", {
+        style: "currency", currency: "USD", maximumFractionDigits: 0,
+      });
+
+      function tick() {
+        const now = new Date();
+        const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const startOfYear = new Date(now.getFullYear(), 0, 1);
+        const fracOfDay = (now - startOfDay) / 86_400_000;
+        const daysThisYear = (now - startOfYear) / 86_400_000;
+
+        yearLabelEl.textContent = `…in ${now.getFullYear()}`;
+        todayEl.textContent = cents.format(perDay * fracOfDay);
+        yearEl.textContent = whole.format(perDay * daysThisYear);
+      }
+
+      if (outflowCounterTimer) clearInterval(outflowCounterTimer);
+      tick();
+      outflowCounterTimer = setInterval(tick, 1000);
     }
 
     const outflowModal = document.getElementById("outflowModal");

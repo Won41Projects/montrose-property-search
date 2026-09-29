@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Outflow banner variants — mockup</title>
+<style>
+  :root {
+    --bg: #f6f2e9;
+    --panel: #ffffff;
+    --text: #22303c;
+    --muted: #5d6b74;
+    --accent: #1e3a5f;
+    --border: #ded5c4;
+    --good: #2f6b45;
+    --loss: #9e2a17;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    padding: 32px 20px 64px;
+  }
+  main { max-width: 860px; margin: 0 auto; }
+  .variant-label {
+    margin: 36px 0 10px;
+    font-size: 0.85rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+  }
+  .section-title { margin: 0 0 12px; font-size: 1.15rem; font-weight: 600; }
+
+  /* ---------- Variant A: verb-first ---------- */
+  .hero-a {
+    text-align: center;
+    padding: 22px 16px;
+    border-radius: 10px;
+    border: 2px solid var(--loss);
+    background: color-mix(in srgb, var(--loss) 7%, transparent);
+  }
+  .hero-a .lead {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--loss);
+  }
+  .hero-a .amount {
+    margin: 2px 0 0;
+    font-size: clamp(2.2rem, 8vw, 3.1rem);
+    font-weight: 800;
+    line-height: 1.05;
+    color: var(--loss);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .hero-a .amount svg { width: 0.85em; height: 0.85em; }
+  .hero-a .tail {
+    margin: 2px 0 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--loss);
+  }
+  .hero-a .sub { margin: 10px 0 0; font-size: 0.92rem; color: var(--muted); }
+
+  /* ---------- Variant B: live counter ---------- */
+  .hero-b {
+    text-align: center;
+    padding: 22px 16px;
+    border-radius: 10px;
+    border: 2px solid var(--loss);
+    background: color-mix(in srgb, var(--loss) 7%, transparent);
+  }
+  .hero-b .label {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .hero-b .amount {
+    margin: 4px 0 0;
+    font-size: clamp(2.2rem, 8vw, 3.1rem);
+    font-weight: 800;
+    line-height: 1.05;
+    color: var(--loss);
+    font-variant-numeric: tabular-nums;
+  }
+  .hero-b .and-counting {
+    display: inline-block;
+    margin-left: 8px;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--loss);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .hero-b .sub { margin: 10px 0 0; font-size: 0.95rem; color: var(--text); font-weight: 600; }
+  .hero-b .sub2 { margin: 4px 0 0; font-size: 0.88rem; color: var(--muted); }
+
+  /* ---------- Variant C: lose vs keep ---------- */
+  .compare { display: grid; gap: 12px; }
+  @media (min-width: 620px) { .compare { grid-template-columns: 1fr 1fr; } }
+  .compare-card {
+    border-radius: 10px;
+    padding: 18px 16px;
+    text-align: center;
+    border: 2px solid;
+  }
+  .compare-card.lose { border-color: var(--loss); background: color-mix(in srgb, var(--loss) 7%, transparent); }
+  .compare-card.keep { border-color: var(--good); background: color-mix(in srgb, var(--good) 8%, transparent); }
+  .compare-card .tag {
+    margin: 0 0 6px;
+    font-size: 0.82rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .compare-card.lose .tag { color: var(--loss); }
+  .compare-card.keep .tag { color: var(--good); }
+  .compare-card .big {
+    margin: 0;
+    font-size: clamp(1.6rem, 5.5vw, 2.2rem);
+    font-weight: 800;
+    line-height: 1.1;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .compare-card.lose .big { color: var(--loss); }
+  .compare-card.keep .big { color: var(--good); }
+  .compare-card .big svg { width: 0.8em; height: 0.8em; flex-shrink: 0; }
+  .compare-card p.small { margin: 6px 0 0; font-size: 0.9rem; color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+
+  <p class="variant-label">Variant A — say "lose" before the number</p>
+  <section class="panel">
+    <h2 class="section-title">Our healthcare dollars are leaving the West End</h2>
+    <div class="hero-a">
+      <p class="lead">Every day, the West End loses</p>
+      <p class="amount">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 4v13m0 0l-5.5-5.5M12 17l5.5-5.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        $22,000
+      </p>
+      <p class="tail">in healthcare spending — gone to other towns</p>
+      <p class="sub">About $8.1 million a year (est. $7.1–9.1 million), based on the 2,259 district residents in the filed service plan.</p>
+    </div>
+  </section>
+
+  <p class="variant-label">Variant B — live "lost so far today" counter</p>
+  <section class="panel">
+    <h2 class="section-title">Our healthcare dollars are leaving the West End</h2>
+    <div class="hero-b">
+      <p class="label">Healthcare money the West End has already lost today:</p>
+      <p class="amount"><span id="counter">$0</span><span class="and-counting">…and counting</span></p>
+      <p class="sub">$22,000 is lost every single day — paid to out-of-town hospitals, pharmacies, and labs.</p>
+      <p class="sub2">A local hospital keeps that money — and 70–80 jobs — here at home.</p>
+    </div>
+  </section>
+
+  <p class="variant-label">Variant C — lose vs. keep, side by side</p>
+  <section class="panel">
+    <h2 class="section-title">Our healthcare dollars are leaving the West End</h2>
+    <div class="compare">
+      <div class="compare-card lose">
+        <p class="tag">Without a hospital, we lose</p>
+        <p class="big">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 4v13m0 0l-5.5-5.5M12 17l5.5-5.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          $22,000 a day
+        </p>
+        <p class="small">$8.1 million a year, gone to out-of-town providers.</p>
+      </div>
+      <div class="compare-card keep">
+        <p class="tag">With our hospital, we keep</p>
+        <p class="big">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M3 11.5L12 4l9 7.5M5.5 10v9h13v-9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          it here at home
+        </p>
+        <p class="small">Those dollars fund 70–80 local jobs and local care.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+<script>
+  const PER_DAY = 22000;
+  function tick() {
+    const now = new Date();
+    const secs = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+    const lost = (PER_DAY / 86400) * secs;
+    document.getElementById("counter").textContent =
+      new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(lost);
+  }
+  tick();
+  setInterval(tick, 1000);
+</script>
+</body>
+</html>
