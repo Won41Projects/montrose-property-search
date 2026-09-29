@@ -3,36 +3,38 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Property Search — Montrose County</title>
+  <title>West End Health Service District — Levy &amp; Savings Calculator</title>
   <style>
     :root {
       color-scheme: light dark;
-      --bg: #f4f6f8;
+      --bg: #f6f2e9;
       --panel: #ffffff;
-      --text: #1a2332;
-      --muted: #5c6b7a;
-      --accent: #1f4e79;
-      --accent-hover: #163a5c;
-      --border: #d7dee7;
+      --text: #22303c;
+      --muted: #5d6b74;
+      --accent: #1e3a5f;
+      --accent-hover: #162c49;
+      --border: #ded5c4;
       --error-bg: #fdecea;
       --error-text: #8a1f11;
-      --good: #0f6e4a;
+      --good: #2f6b45;
       --warn: #b45309;
+      --emblem-sky: #f7f3ea;
     }
 
     @media (prefers-color-scheme: dark) {
       :root {
-        --bg: #12161c;
-        --panel: #1b222b;
-        --text: #e8edf3;
-        --muted: #9aa8b7;
-        --accent: #5b9bd5;
-        --accent-hover: #7ab0e0;
-        --border: #2d3744;
+        --bg: #101922;
+        --panel: #19242f;
+        --text: #e9edf1;
+        --muted: #9fadb8;
+        --accent: #7fa8d0;
+        --accent-hover: #9cbede;
+        --border: #2c3a47;
         --error-bg: #3a1f1c;
         --error-text: #f2b8b0;
-        --good: #6ecf9a;
+        --good: #74c393;
         --warn: #fbbf24;
+        --emblem-sky: #19242f;
       }
     }
 
@@ -57,11 +59,52 @@
       margin-bottom: 28px;
     }
 
+    .brand-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+
+    .brand-emblem {
+      width: 64px;
+      height: 64px;
+      flex-shrink: 0;
+    }
+
+    .brand-kicker {
+      margin: 0 0 2px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--good);
+    }
+
     h1 {
       margin: 0 0 10px;
       font-size: 1.75rem;
       font-weight: 650;
       line-height: 1.25;
+    }
+
+    .brand-row h1 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--accent);
+    }
+
+    .brand-tagline {
+      margin: 4px 0 0;
+      font-size: 0.95rem;
+      font-style: italic;
+      color: var(--muted);
+    }
+
+    .brand-purpose {
+      margin: 10px 0 0;
+      font-size: 1rem;
+      color: var(--text);
     }
 
     .levy-detail {
@@ -434,6 +477,17 @@
       color: var(--muted);
     }
 
+    .footer-tagline {
+      margin: 0 0 10px;
+      font-size: 0.95rem;
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--accent);
+    }
+
+    .footer-tagline strong {
+      color: var(--good);
+    }
+
     .recovery-panel {
       margin-top: 24px;
       background: var(--panel);
@@ -737,6 +791,49 @@
       color: var(--muted);
     }
 
+    .services-panel {
+      margin-top: 24px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px;
+    }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .service-card {
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--good) 6%, transparent);
+      border-top: 3px solid var(--good);
+    }
+
+    .service-card strong {
+      display: block;
+      font-size: 0.95rem;
+      color: var(--accent);
+      margin-bottom: 2px;
+    }
+
+    .service-card span {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .services-note {
+      margin: 14px 0 0;
+      text-align: center;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--good);
+    }
+
     .title-row {
       display: flex;
       align-items: center;
@@ -993,8 +1090,29 @@
 <body>
   <main>
     <header>
-      <h1 id="page-title">Proposed West End Health Service District</h1>
+      <div class="brand-row">
+        <svg class="brand-emblem" viewBox="0 0 64 64" role="img" aria-label="West End Health Service District emblem">
+          <defs>
+            <clipPath id="emblemClip"><circle cx="32" cy="32" r="28" /></clipPath>
+          </defs>
+          <circle cx="32" cy="32" r="28" fill="var(--emblem-sky)" />
+          <g clip-path="url(#emblemClip)">
+            <path d="M10 44 L26 20 L36 36 L44 26 L58 46 Z" fill="var(--accent)" />
+            <path d="M4 48 Q20 40 34 47 Q48 54 60 46 L60 64 L4 64 Z" fill="var(--good)" />
+          </g>
+          <circle cx="32" cy="32" r="28" fill="none" stroke="var(--accent)" stroke-width="3.5" />
+        </svg>
+        <div>
+          <p class="brand-kicker">Nucla &bull; Naturita &bull; The West End</p>
+          <h1 id="page-title">West End Health Service District</h1>
+          <p class="brand-tagline">Complete care. Close to home. For every stage of life.</p>
+        </div>
+      </div>
       <p class="levy-detail" id="levy-detail">Loading levy information…</p>
+      <p class="brand-purpose">
+        Look up your actual tax for the proposed district below — then compare it to what care
+        close to home saves your household, and what it builds for the West End.
+      </p>
     </header>
 
     <section class="outflow-panel" aria-labelledby="outflow-title">
@@ -1071,9 +1189,10 @@
     </section>
 
     <section class="benefit-panel" id="benefit-panel" aria-labelledby="benefit-title">
-      <h2 class="section-title" id="benefit-title">What you gain vs. what you pay</h2>
+      <h2 class="section-title" id="benefit-title">Your investment. Our community. Our future.</h2>
       <p class="subtitle" style="margin-bottom: 12px;">
-        Travel savings for your household compared to the levy from your selected properties.
+        What you gain vs. what you pay — travel savings for your household compared to the levy
+        from your selected properties.
       </p>
 
       <p class="benefit-levy-note" id="benefitLevyNote">
@@ -1188,6 +1307,22 @@
       </div>
     </section>
 
+    <section class="services-panel" aria-labelledby="services-title">
+      <h2 class="section-title" id="services-title">What your mill levy investment builds</h2>
+      <p class="subtitle" style="margin: 0;">Local services. Close to home. For every stage of life.</p>
+      <div class="services-grid">
+        <article class="service-card"><strong>Family Practice</strong><span>Care for every stage of life.</span></article>
+        <article class="service-card"><strong>Dental Care</strong><span>Healthy smiles. Healthy families.</span></article>
+        <article class="service-card"><strong>Behavioral Health</strong><span>Supporting minds. Strengthening lives.</span></article>
+        <article class="service-card"><strong>Specialty Care</strong><span>Advanced care, close to home.</span></article>
+        <article class="service-card"><strong>Emergency Care</strong><span>Here when it matters most.</span></article>
+        <article class="service-card"><strong>Testing &amp; Therapies</strong><span>Answers. Healing. Getting you back.</span></article>
+        <article class="service-card"><strong>Inpatient Care</strong><span>Healing in a place that feels like home.</span></article>
+        <article class="service-card"><strong>Long Term Care</strong><span>Living with dignity. Staying close.</span></article>
+      </div>
+      <p class="services-note">Local care means better health, stronger families, and a stronger West End.</p>
+    </section>
+
     <section class="recovery-panel" aria-labelledby="recovery-title">
       <div class="title-row">
         <h2 class="section-title" id="recovery-title">How travel time affects recovery</h2>
@@ -1259,11 +1394,13 @@
     </section>
 
     <footer>
+      <p class="footer-tagline">For our neighbors. For our families. For our future. <strong>Right here. Right now.</strong></p>
       Data from
       <a href="https://eagleweb.montrosecounty.net/eagleassessor/web/" target="_blank" rel="noopener">EagleWeb</a>
       and
       <a href="https://treasurerweb.montrosecounty.net/treasurer/web/" target="_blank" rel="noopener">TreasurerWeb</a>.
       Senior exemption amounts come from TreasurerWeb tax bills.
+      Services listed are from the West End Health Service District's filed service plan and election materials.
     </footer>
   </main>
 
@@ -1321,7 +1458,7 @@
       <p id="outflowModalIntro">
         Without a local hospital, virtually every healthcare dollar attached to our residents is
         paid to providers in other towns. This estimate counts only the everyday care a local
-        critical care unit would keep here.
+        critical access hospital would keep here.
       </p>
 
       <h3>Estimated annual outflow</h3>
@@ -1381,7 +1518,7 @@
           `<strong>${levy.millLevy} mills</strong> — Estimated increases use each property's ` +
           `<em>Total Non-School Assessed Value</em> from EagleWeb (${levy.assessmentYear || "current year"}). ` +
           `When a senior property tax exemption applies, the estimate is reduced using exemption data from TreasurerWeb.`;
-        document.title = `Property Search — ${levy.label || "Montrose County"}`;
+        document.title = `${levy.label || "West End Health Service District"} — Levy & Savings Calculator`;
         return;
       }
 
