@@ -28,8 +28,20 @@ rooms just to get there. We never see that money leave, because the insurance
 companies pay it directly. But it's our money, attached to our people, and
 right now none of it stays."
 
-Masters, ⟨brief bio: years in the West End, occupation, family/community
-ties⟩, didn't take anyone's word for the numbers — he built a public
+Masters, of Naturita, is president of the Nucla-Naturita Area Chamber of
+Commerce (NNACC) — which serves the same five communities the proposed
+district would — and co-owner of Paradox Cycle. He says understanding the
+outflow is what decided his candidacy.
+
+"As chamber president, I've spent my energy on keeping our local businesses
+and our community alive," Masters said. "When I finally understood how much
+money leaves this community for healthcare — money we never even see, because
+insurance pays it straight out of town — the decision to run became both
+obvious and critical. You cannot build a strong local economy while nine
+million dollars a year walks out the door."
+
+Masters didn't take anyone's word for the numbers — drawing on his
+professional background in operations and technology, he built a public
 calculator to check them. The tool, available at
 **montrose-property-search.onrender.com**, lets any property owner look up
 their actual parcel and see exactly what the proposed 20-mill levy would cost
@@ -97,8 +109,10 @@ rate plus meals and occasional overnight stays. Rural hospital economics:
 Holmes et al., *Health Services Research*; Eilrich et al. (2015). Jobs figure
 (70–80) from the district's filed materials.
 
-⟨Closing boilerplate: one short paragraph about Troy Masters — residence,
-work, community involvement, and how to reach the campaign.⟩
+Troy Masters lives in Naturita, where he is president of the Nucla-Naturita
+Area Chamber of Commerce and co-owner of Paradox Cycle. His professional
+background is in operations consulting, product management, and solutions
+architecture. ⟨How to reach the campaign: phone/email/site.⟩
 
 ---
 
