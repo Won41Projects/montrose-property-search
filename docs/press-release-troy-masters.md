@@ -30,8 +30,10 @@ right now none of it stays."
 
 Masters, of Naturita, is president of the Nucla-Naturita Area Chamber of
 Commerce (NNACC) — which serves the same five communities the proposed
-district would — and co-owner of Paradox Cycle. He says understanding the
-outflow is what decided his candidacy.
+district would — and co-owner of Paradox Cycle. He is speaking as an
+individual candidate and resident, not on behalf of the chamber; his title is
+noted for identification only. He says understanding the outflow is what
+decided his candidacy.
 
 "As chamber president, I've spent my energy on keeping our local businesses
 and our community alive," Masters said. "When I finally understood how much
@@ -112,7 +114,9 @@ Holmes et al., *Health Services Research*; Eilrich et al. (2015). Jobs figure
 Troy Masters lives in Naturita, where he is president of the Nucla-Naturita
 Area Chamber of Commerce and co-owner of Paradox Cycle. His professional
 background is in operations consulting, product management, and solutions
-architecture. ⟨How to reach the campaign: phone/email/site.⟩
+architecture. Chamber affiliation is listed for identification purposes only;
+Mr. Masters speaks solely on his own behalf as a candidate, not for the
+chamber or its membership. ⟨How to reach the campaign: phone/email/site.⟩
 
 ---
 
