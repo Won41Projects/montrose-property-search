@@ -777,7 +777,8 @@ function sendJson(res, statusCode, payload) {
 }
 
 function serveStatic(req, res) {
-  const urlPath = req.url === "/" ? "/index.html" : req.url.split("?")[0];
+  const pathname = req.url.split("?")[0];
+  const urlPath = pathname === "/" ? "/index.html" : pathname;
   const rootDir = urlPath.startsWith("/spike/")
     ? path.join(__dirname, "spike")
     : path.join(__dirname, "public");
