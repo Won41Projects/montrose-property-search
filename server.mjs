@@ -806,9 +806,22 @@ function serveStatic(req, res) {
         ? "text/css; charset=utf-8"
         : ext === ".js"
           ? "text/javascript; charset=utf-8"
-          : "application/octet-stream";
+          : ext === ".png"
+            ? "image/png"
+            : ext === ".svg"
+              ? "image/svg+xml"
+              : ext === ".ico"
+                ? "image/x-icon"
+                : "application/octet-stream";
 
-  res.writeHead(200, { "Content-Type": type });
+  res.writeHead(200, {
+    "Content-Type": type,
+    "Content-Length": fs.statSync(filePath).size,
+  });
+  if (req.method === "HEAD") {
+    res.end();
+    return;
+  }
   fs.createReadStream(filePath).pipe(res);
 }
 
@@ -857,7 +870,7 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
-    if (req.method === "GET") {
+    if (req.method === "GET" || req.method === "HEAD") {
       serveStatic(req, res);
       return;
     }
