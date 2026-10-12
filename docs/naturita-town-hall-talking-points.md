@@ -32,6 +32,14 @@ Behavioral health at UMC is real counseling. It is not a hospital unit.
 
 The shuttle is real. It is a ride to a UMC appointment, not a ride to a bed.
 
+## If they ask how a hospital gets paid
+
+UMC gets a flat fee for each office visit. In 2026 Medicare’s base is about $208, and Medicare pays 80 percent of that. UMC also gets a federal clinic grant. The fee does not grow because someone came in at 2 a.m. or needed a bed. UMC cannot bill a hospital stay.
+
+A critical access hospital is paid for the cost of the care. Medicare pays 101 percent of the allowable cost of the emergency visit, the overnight stay, and the swing bed. A 2 percent federal cut brings the check closer to 99 percent, and not every expense counts. That payment is what makes staying open all night possible.
+
+The clinic is paid per visit. The hospital is paid for the cost of the night, the emergency, and the bed.
+
 ## Leave alone
 
 Do not call the meeting illegal. Do not say “critical care.” Do not argue the levy, the spreadsheet, or Norwood joining the district. Do not claim the biggest dollars in the West End estimate are the ones a clinic cannot bill. Pharmacy and primary care are the larger share. The emergency, the stay, the imaging, and the therapy are the share a clinic cannot keep.
