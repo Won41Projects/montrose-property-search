@@ -1,2 +1,4 @@
 .DS_Store
 node_modules/
+# Raw Cursor chat exports (may contain personal info or pasted secrets)
+chat-history/

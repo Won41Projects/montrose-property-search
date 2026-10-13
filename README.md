@@ -11,6 +11,10 @@ node server.mjs
 
 Open [http://localhost:3847](http://localhost:3847)
 
+## Deploy
+
+Render runs `npm start` and checks `/api/version`. The live site is [montrose-property-search.onrender.com](https://montrose-property-search.onrender.com). To embed it on Squarespace, use a Code block with an iframe pointed at that URL.
+
 ## What it searches
 
 One query box accepts:
@@ -18,7 +22,6 @@ One query box accepts:
 - **Owner name** — `Troy Masters` or `Masters Troy`
 - **Account number** — `R0007980`
 - **Parcel number** — `4269-302-00-055`
-- **Street address** — `203 Highway 97`
 
 The server routes the query to the right EagleWeb field and falls back to other interpretations when needed.
 

@@ -779,13 +779,8 @@ function sendJson(res, statusCode, payload) {
 function serveStatic(req, res) {
   const pathname = req.url.split("?")[0];
   const urlPath = pathname === "/" ? "/index.html" : pathname;
-  const rootDir = urlPath.startsWith("/spike/")
-    ? path.join(__dirname, "spike")
-    : path.join(__dirname, "public");
-  const requestPath = urlPath.startsWith("/spike/")
-    ? urlPath.slice("/spike".length) || "/community-benefit.html"
-    : urlPath;
-  const filePath = path.join(rootDir, requestPath);
+  const rootDir = path.join(__dirname, "public");
+  const filePath = path.join(rootDir, urlPath);
 
   if (!filePath.startsWith(rootDir)) {
     res.writeHead(403);
